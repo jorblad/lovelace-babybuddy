@@ -236,7 +236,31 @@ class BabyBuddyTimelineCard extends HTMLElement {
     } else this._debugEl.style.display='none';
   }
 
-  set hass(hass) { this._hass=hass; this.updateChart(hass).catch(console.error); }
+  set hass(hass) {
+    this._hass = hass;
+    if (!hass) {
+      // preview mode: stub data
+      const now = Date.now();
+      const stub = [
+        [now-3600*1000*2,1],
+        [now-3600*1000,1],
+        [now,1]
+      ];
+      this._chart && this._chart.destroy();
+      this._chart = new ApexCharts(this._chartEl, {
+        chart: { height:320, type:'scatter' },
+        series: [{ name:'Preview', type:'scatter', data:stub }],
+        dataLabels: { enabled:true, formatter:(val,opts)=>opts.w.config.series[opts.seriesIndex].data[opts.dataPointIndex].meta?.emoji || '', style:{fontSize:'24px'} },
+        xaxis:{ type:'datetime' },
+        markers:{ size:1 },
+        tooltip:{ enabled:false }
+      });
+      this._chart.render().catch(console.warn);
+      return;
+    }
+    this.updateChart(hass).catch(console.error);
+  }
+
   getCardSize() { return 4; }
 }
 
