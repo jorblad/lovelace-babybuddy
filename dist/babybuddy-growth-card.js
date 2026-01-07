@@ -232,11 +232,11 @@ class BabyBuddyGrowthCard extends HTMLElement {
         { name: 'persist_key', selector: { text: {} } },
         { name: 'height', selector: { number: {} } },
         { name: 'chart_type', selector: { select: { options: [ { value: 'line', label: 'Line' }, { value: 'area', label: 'Area' }, { value: 'scatter', label: 'Scatter' } ] } } },
-        { name: 'debug', selector: { boolean: {} } },
         { name: 'entity_labels', selector: { text: {} } },
         { name: 'entity_colors', selector: { text: {} } },
         { name: 'timespan_hours', selector: { number: {} } },
-        { name: 'disable_scroll_zoom', selector: { boolean: {} } }
+        { name: 'disable_scroll_zoom', selector: { boolean: {} } },
+        { name: 'debug', selector: { boolean: {} } }
       ],
       computeLabel: (schema) => {
         const m = { entities: 'Entities', persist_key: 'Persist key', height: 'Chart height', chart_type: 'Chart type', debug: 'Show debug panel', entity_labels: 'Entity labels (JSON)', entity_colors: 'Entity colors (JSON)' };
@@ -258,7 +258,13 @@ class BabyBuddyGrowthCard extends HTMLElement {
 }
 
 customElements.define('babybuddy-growth-card', BabyBuddyGrowthCard);
-
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: "babybuddy-growth-card",
+  name: "BabyBuddy Growth Card",
+  description: "Displays growth metrics using ApexCharts",
+  preview: true,  // optional, allows showing in editor preview
+});
 
 BabyBuddyGrowthCard.getStubConfig = function() { return { entities: [], debug: true }; };
 

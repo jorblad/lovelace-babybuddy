@@ -383,6 +383,14 @@ class BabyBuddyTimelineCard extends HTMLElement {
 }
 
 customElements.define('babybuddy-timeline-card', BabyBuddyTimelineCard);
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: "babybuddy-timeline-card",
+  name: "BabyBuddy Timeline Card",
+  description: "Displays timeline data using ApexCharts",
+  preview: true,  // optional, allows showing in editor preview
+});
+
 
 /* Lovelace UI editor support removed; use built-in form editor */
 BabyBuddyTimelineCard.getStubConfig = function() { return { feedings_entity: '', diaper_entity: '', debug: true }; };
