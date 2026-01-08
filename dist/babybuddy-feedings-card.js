@@ -315,11 +315,11 @@ class BabyBuddyWeekFeedingsCard extends HTMLElement {
   }
 }
 
-customElements.define('babybuddy-week-feedings-card', BabyBuddyWeekFeedingsCard);
+customElements.define('babybuddy-feedings-card', BabyBuddyWeekFeedingsCard);
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: "babybuddy-week-feedings-card",
-  name: "BabyBuddy Week Feedings Card",
+  type: "babybuddy-feedings-card",
+  name: "BabyBuddy Feedings Card",
   description: "Shows left vs right feedings per day for the last week as split bars",
   preview: true
 });
