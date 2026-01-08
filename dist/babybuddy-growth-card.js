@@ -229,17 +229,16 @@ class BabyBuddyGrowthCard extends HTMLElement {
     return {
       schema: [
         { name: 'entities', required: true, selector: { entity: { multiple: true } } },
-        { name: 'persist_key', selector: { text: {} } },
-        { name: 'height', selector: { number: {} } },
-        { name: 'chart_type', selector: { select: { options: [ { value: 'line', label: 'Line' }, { value: 'area', label: 'Area' }, { value: 'scatter', label: 'Scatter' } ] } } },
         { name: 'entity_labels', selector: { text: {} } },
         { name: 'entity_colors', selector: { text: {} } },
+        { name: 'height', selector: { number: {} } },
+        { name: 'chart_type', selector: { select: { options: [ { value: 'line', label: 'Line' }, { value: 'area', label: 'Area' }, { value: 'scatter', label: 'Scatter' } ] } } },
         { name: 'timespan_hours', selector: { number: {} } },
         { name: 'disable_scroll_zoom', selector: { boolean: {} } },
         { name: 'debug', selector: { boolean: {} } }
       ],
       computeLabel: (schema) => {
-        const m = { entities: 'Entities', persist_key: 'Persist key', height: 'Chart height', chart_type: 'Chart type', debug: 'Show debug panel', entity_labels: 'Entity labels (JSON)', entity_colors: 'Entity colors (JSON)' };
+        const m = { entities: 'Entities', height: 'Chart height', chart_type: 'Chart type', debug: 'Show debug panel', entity_labels: 'Entity labels (JSON)', entity_colors: 'Entity colors (JSON)' };
         return m[schema.name];
       },
       computeHelper: (schema) => {
