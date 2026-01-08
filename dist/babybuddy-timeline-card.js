@@ -1,6 +1,58 @@
 class BabyBuddyTimelineCard extends HTMLElement {
   setConfig(config) {
-    this.config = config || {};
+    config = config || {};
+
+    // Parse offset_labels into an array of strings
+    const parseOffsetLabels = (v) => {
+      if (v == null) return [];
+      if (Array.isArray(v)) return v.map((x) => String(x));
+      const s = String(v).trim();
+      if (!s) return [];
+      // Try JSON first
+      try {
+        const arr = JSON.parse(s);
+        if (Array.isArray(arr)) return arr.map((x) => String(x));
+      } catch (e) {
+        // Not JSON, fall back to comma-separated
+      }
+      return s
+        .replace(/^[\[\(]\s*|\s*[\]\)]$/g, '') // trim [] or ()
+        .split(',')
+        .map((p) => p.trim().replace(/^['"]|['"]$/g, ''))
+        .filter(Boolean)
+        .map((x) => String(x));
+    };
+
+    this.config = {
+      feedings_entity: String(config.feedings_entity || ''),
+      diaper_entity: String(config.diaper_entity || ''),
+      offsets: config.offsets ?? '',
+      offset_labels: parseOffsetLabels(config.offset_labels),
+
+      // Feeding labels
+      label_left: String(config.label_left || 'Left'),
+      label_right: String(config.label_right || 'Right'),
+      label_bottle: String(config.label_bottle || 'Bottle'),
+      label_other: String(config.label_other || 'Other'),
+
+      // Diaper labels
+      label_wet: String(config.label_wet || 'Wet'),
+      label_solid: String(config.label_solid || 'Solid'),
+
+      // Colors
+      color_left: config.color_left || '#1f77b4',
+      color_right: config.color_right || '#ff7f0e',
+      color_bottle: config.color_bottle || '#2ca02c',
+      color_other: config.color_other || '#7f7f7f',
+      color_wet: config.color_wet || '#00bfff',
+      color_solid: config.color_solid || '#ff8c00',
+
+      debug: !!config.debug,
+      compare_as_rows: !!config.compare_as_rows,
+      force_midnight: !!config.force_midnight,
+      disable_scroll_zoom: !!config.disable_scroll_zoom,
+      height: config.height || 320
+    };
   }
 
   connectedCallback() {
@@ -9,9 +61,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host { display:block; }
-        #chart { width: 100%; height: 320px; }
-        #controls { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
-        .method-toggle { margin-right:6px; }
+        #chart { width: 100%; height: ${Number(this.config?.height || 320)}px; }
         #debug { font-size:12px; color:#444; margin-top:8px; white-space:pre-wrap; }
       </style>
       <div id="chart"></div>
@@ -83,7 +133,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
           const timeOfDay = tod.getHours()*3600000 + tod.getMinutes()*60000 + tod.getSeconds()*1000 + tod.getMilliseconds();
           const baseX = todayStart.getTime() + timeOfDay;
           const newY = compareAsRows ? (band * (offsets.length - 1 - oi) + methodJitter) : y;
-          return { x: baseX, y: newY, meta: { originalX: x } };  // store original timestamp
+          return { x: baseX, y: newY, meta: { originalX: x } };
         });
 
       if (data.length) mappedSeries.push({ name: `${label} — ${seriesLabel}`, type: 'scatter', data, color });
@@ -97,46 +147,81 @@ class BabyBuddyTimelineCard extends HTMLElement {
     if (!this.isConnected) return;
     await this._loadApex();
 
+    // Define DAY_MS before any function that uses it
+    const DAY_MS = 24 * 3600 * 1000;
+
     const feedEnt = this.config.feedings_entity;
     const diaperEnt = this.config.diaper_entity;
     const feedState = feedEnt ? hass.states[feedEnt] : null;
     const diaperState = diaperEnt ? hass.states[diaperEnt] : null;
 
     /* ----------------- CONFIGURATION ----------------- */
-    const methodLabels = Object.assign({ left: 'Left', right: 'Right', bottle: 'Bottle', other: 'Other' }, this.config.feed_labels || {});
-    const methodColors = Object.assign({ left: '#1f77b4', right: '#ff7f0e', bottle: '#2ca02c', other: '#7f7f7f' }, this.config.feed_colors || {});
+    const methodLabels = Object.assign(
+      { left: 'Left', right: 'Right', bottle: 'Bottle', other: 'Other' },
+      this.config.feed_labels || {}
+    );
+    const methodColors = Object.assign(
+      { left: '#1f77b4', right: '#ff7f0e', bottle: '#2ca02c', other: '#7f7f7f' },
+      this.config.feed_colors || {}
+    );
     ['left','right','bottle','other'].forEach(k => {
       const labKey = 'label_' + k; const colKey = 'color_' + k;
       if (this.config[labKey]) methodLabels[k] = this.config[labKey];
       if (this.config[colKey]) methodColors[k] = this.config[colKey];
     });
+
+    // Diaper labels
+    const diaperLabels = {
+      wet: this.config.label_wet || 'Wet',
+      solid: this.config.label_solid || 'Solid'
+    };
+
     const wetColor = this.config.color_wet || '#00bfff';
     const solidColor = this.config.color_solid || '#ff8c00';
     const compareAsRows = !!this.config.compare_as_rows;
     const forceMidnight = !!this.config.force_midnight;
-    const DAY_MS = 24*3600*1000;
 
     /* ----------------- PARSE OFFSETS ----------------- */
     const parseOffset = (v) => {
       if (v == null) return null;
-      if (typeof v === 'number') return { days: v, ms: v*DAY_MS, label: `${v}d` };
+      if (typeof v === 'number') return { days: v, ms: v * DAY_MS, label: `${v}d` };
       const s = String(v).trim();
       const m = s.match(/^(-?\d+(?:\.\d+)?)\s*(d|h)?$/i);
       if (m) {
         const num = Number(m[1]); const unit = (m[2] || 'd').toLowerCase();
-        if (unit==='h') return { days: num/24, ms: num*3600*1000, label: `${num}h` };
-        return { days: num, ms: num*DAY_MS, label: `${num}d` };
+        if (unit === 'h') return { days: num / 24, ms: num * 3600 * 1000, label: `${num}h` };
+        return { days: num, ms: num * DAY_MS, label: `${num}d` };
       }
       try { const parsed = JSON.parse(s); return parseOffset(parsed); } catch(e) {}
       return null;
     };
+
     let offsets = null;
-    if (Array.isArray(this.config.offsets)) offsets = this.config.offsets.map(parseOffset).filter(Boolean);
-    else if (typeof this.config.offsets === 'string' && this.config.offsets.trim()) {
+    if (Array.isArray(this.config.offsets)) {
+      offsets = this.config.offsets.map(parseOffset).filter(Boolean);
+    } else if (typeof this.config.offsets === 'string' && this.config.offsets.trim()) {
       let s = this.config.offsets.trim();
-      const jsonTry = (()=>{ try { return JSON.parse(s); } catch(e){ return null; } })();
+      const jsonTry = (() => { try { return JSON.parse(s); } catch(e) { return null; } })();
       if (Array.isArray(jsonTry)) offsets = jsonTry.map(parseOffset).filter(Boolean);
-      else offsets = s.replace(/^[\[\(]\s*|\s*[\]\)]$/g,'').split(',').map(p=>p.trim().replace(/^['"]|['"]$/g,'')).map(parseOffset).filter(Boolean);
+      else {
+        offsets = s
+          .replace(/^[\[\(]\s*|\s*[\]\)]$/g, '')
+          .split(',')
+          .map((p) => p.trim().replace(/^['"]|['"]$/g, ''))
+          .map(parseOffset)
+          .filter(Boolean);
+      }
+    }
+
+    // Apply custom offset labels by index
+    const customOffsetLabels = Array.isArray(this.config.offset_labels) ? this.config.offset_labels : [];
+    if (offsets && offsets.length && customOffsetLabels.length) {
+      for (let i = 0; i < offsets.length; i++) {
+        const lbl = customOffsetLabels[i];
+        if (typeof lbl === 'string' && lbl.trim()) {
+          offsets[i].label = lbl.trim();
+        }
+      }
     }
 
     /* ----------------- FEEDINGS ----------------- */
@@ -185,8 +270,9 @@ class BabyBuddyTimelineCard extends HTMLElement {
     for (const k of ['left','right','bottle','other']) {
       series.push(...this._mapSeriesWithOffsets(feedGroups[k], offsets, methodLabels[k], compareAsRows, 0, methodColors[k]));
     }
-    series.push(...this._mapSeriesWithOffsets(wetPoints, offsets, 'Wet', compareAsRows, 2, wetColor));
-    series.push(...this._mapSeriesWithOffsets(solidPoints, offsets, 'Solid', compareAsRows, 3, solidColor));
+    // Diaper labels configurable
+    series.push(...this._mapSeriesWithOffsets(wetPoints, offsets, diaperLabels.wet, compareAsRows, 2, wetColor));
+    series.push(...this._mapSeriesWithOffsets(solidPoints, offsets, diaperLabels.solid, compareAsRows, 3, solidColor));
 
     /* ----------------- X/Y AXIS ----------------- */
     let compareXMin=null, compareXMax=null, compareYMin=null, compareYMax=null;
@@ -207,7 +293,6 @@ class BabyBuddyTimelineCard extends HTMLElement {
       tooltip: {
         x: {
           formatter: function(val, opts) {
-            // opts.dataPointIndex gives the index in the series
             const meta = opts?.seriesIndex != null && opts?.w?.config?.series[opts.seriesIndex]?.data?.[opts.dataPointIndex]?.meta;
             if (meta && meta.originalX) return new Date(meta.originalX).toLocaleString();
             return new Date(val).toLocaleString();
@@ -239,7 +324,6 @@ class BabyBuddyTimelineCard extends HTMLElement {
   set hass(hass) {
     this._hass = hass;
     if (!hass) {
-      // preview mode: stub data
       const now = Date.now();
       const stub = [
         [now-3600*1000*2,1],
@@ -262,15 +346,108 @@ class BabyBuddyTimelineCard extends HTMLElement {
   }
 
   getCardSize() { return 4; }
+
+  static getConfigForm() {
+    return {
+      schema: [
+        { name: 'feedings_entity', required: false, selector: { entity: { domain: 'sensor' } } },
+        { name: 'diaper_entity', required: false, selector: { entity: { domain: 'sensor' } } },
+
+        { type: 'section', label: 'Feed Labels' },
+        { name: 'label_left', selector: { text: { multiline: false } }, default: 'Left' },
+        { name: 'label_right', selector: { text: { multiline: false } }, default: 'Right' },
+        { name: 'label_bottle', selector: { text: { multiline: false } }, default: 'Bottle' },
+        { name: 'label_other', selector: { text: { multiline: false } }, default: 'Other' },
+
+        { type: 'section', label: 'Feed Colors' },
+        { name: 'color_left', selector: { color: { mode: 'hex' } }, default: '#1f77b4' },
+        { name: 'color_right', selector: { color: { mode: 'hex' } }, default: '#ff7f0e' },
+        { name: 'color_bottle', selector: { color: { mode: 'hex' } }, default: '#2ca02c' },
+        { name: 'color_other', selector: { color: { mode: 'hex' } }, default: '#7f7f7f' },
+
+        { type: 'section', label: 'Diaper Labels' },
+        { name: 'label_wet', selector: { text: { multiline: false } }, default: 'Wet' },
+        { name: 'label_solid', selector: { text: { multiline: false } }, default: 'Solid' },
+
+        { type: 'section', label: 'Diaper Colors' },
+        { name: 'color_wet', selector: { color: { mode: 'hex' } }, default: '#00bfff' },
+        { name: 'color_solid', selector: { color: { mode: 'hex' } }, default: '#ff8c00' },
+
+        { type: 'section', label: 'Offsets' },
+        { name: 'offsets', selector: { text: { multiline: false } }, default: '' },
+        { name: 'offset_labels', selector: { text: { multiline: false } }, default: '' },
+
+        { type: 'section', label: 'Options' },
+        { name: 'compare_as_rows', selector: { boolean: {} }, default: false },
+        { name: 'force_midnight', selector: { boolean: {} }, default: false },
+        { name: 'height', selector: { number: { min: 200, max: 800, step: 10 } }, default: 320 },
+        { name: 'disable_scroll_zoom', selector: { boolean: {} }, default: false },
+        { name: 'debug', selector: { boolean: {} }, default: false }
+      ],
+      computeLabel: (schema) => {
+        const labels = {
+          feedings_entity: 'Feedings Entity',
+          diaper_entity: 'Diaper Entity',
+          label_left: 'Left Label',
+          label_right: 'Right Label',
+          label_bottle: 'Bottle Label',
+          label_other: 'Other Label',
+          color_left: 'Left Color',
+          color_right: 'Right Color',
+          color_bottle: 'Bottle Color',
+          color_other: 'Other Color',
+          label_wet: 'Wet Label',
+          label_solid: 'Solid Label',
+          color_wet: 'Wet Color',
+          color_solid: 'Solid Color',
+          offsets: 'Offsets',
+          offset_labels: 'Offset Labels',
+          compare_as_rows: 'Compare as Rows',
+          force_midnight: 'Force Midnight X-Axis',
+          height: 'Chart height',
+          disable_scroll_zoom: 'Disable scroll-to-zoom',
+          debug: 'Show Debug Info'
+        };
+        return labels[schema.name] || schema.label || '';
+      },
+      computeHelper: (schema) => {
+        if (schema.name === 'offsets') return 'Example: [0,1,2] or "0,1,2" or "24h,48h". Units: d (days) or h (hours).';
+        if (schema.name === 'offset_labels') return 'Comma-separated or JSON array. Mapped by index to offsets: e.g. "Today,Yesterday,2d ago" or ["Today","Yesterday","2d ago"].';
+        if (schema.name === 'disable_scroll_zoom') return 'Prevents mouse wheel zoom when inside the card.';
+        return undefined;
+      },
+      assertConfig: (config) => {
+        if (typeof config.offsets === 'string' && config.offsets.trim()) {
+          const s = config.offsets.trim();
+          try {
+            const parsed = JSON.parse(s);
+            if (!Array.isArray(parsed)) throw new Error('offsets JSON must be an array');
+          } catch (e) {
+            // not JSON: acceptable (comma-separated), do nothing
+          }
+        }
+        if (typeof config.offset_labels === 'string' && config.offset_labels.trim()) {
+          const s = config.offset_labels.trim();
+          try {
+            const parsed = JSON.parse(s);
+            if (!Array.isArray(parsed)) throw new Error('offset_labels JSON must be an array of strings');
+          } catch (e) {
+            // not JSON: acceptable (comma-separated), do nothing
+          }
+        }
+        return config;
+      }
+    };
+  }
 }
 
 customElements.define('babybuddy-timeline-card', BabyBuddyTimelineCard);
-window.customCards = window.customCards||[];
+window.customCards = window.customCards || [];
 window.customCards.push({
-  type:"babybuddy-timeline-card",
-  name:"BabyBuddy Timeline Card",
-  description:"Displays timeline data using ApexCharts",
-  preview:true
+  type: "babybuddy-timeline-card",
+  name: "BabyBuddy Timeline Card",
+  description: "Displays timeline data using ApexCharts",
+  preview: true
 });
 
 BabyBuddyTimelineCard.getStubConfig = () => ({ feedings_entity:'', diaper_entity:'', debug:true });
