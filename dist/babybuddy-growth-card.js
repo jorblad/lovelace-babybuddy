@@ -58,41 +58,47 @@ class BabyBuddyGrowthCard extends HTMLElement {
     if (!this._initialized) this.connectedCallback();
     if (!this.isConnected) return;
     await this._loadApex();
+
     const entities = this.config.entities || [];
     const series = [];
-    // parse optional entity_labels/entity_colors from config (allow JSON string or object)
+
+    // Parse optional labels/colors/units from config (allow JSON string or object)
     let labelMap = {};
     let colorMap = {};
+    let unitMap = {};
     try {
       if (this.config && this.config.entity_labels) {
-        if (typeof this.config.entity_labels === 'string') labelMap = JSON.parse(this.config.entity_labels);
-        else labelMap = this.config.entity_labels;
+        labelMap = typeof this.config.entity_labels === 'string' ? JSON.parse(this.config.entity_labels) : this.config.entity_labels;
       }
     } catch (e) { console.warn('Invalid entity_labels JSON', e); }
     try {
       if (this.config && this.config.entity_colors) {
-        if (typeof this.config.entity_colors === 'string') colorMap = JSON.parse(this.config.entity_colors);
-        else colorMap = this.config.entity_colors;
+        colorMap = typeof this.config.entity_colors === 'string' ? JSON.parse(this.config.entity_colors) : this.config.entity_colors;
       }
     } catch (e) { console.warn('Invalid entity_colors JSON', e); }
+    try {
+      if (this.config && this.config.entity_units) {
+        unitMap = typeof this.config.entity_units === 'string' ? JSON.parse(this.config.entity_units) : this.config.entity_units;
+      }
+    } catch (e) { console.warn('Invalid entity_units JSON', e); }
+
     const info = [];
     for (const ent of entities) {
       const state = hass.states[ent];
-      const name = (state && (state.attributes && (state.attributes.friendly_name || state.attributes.friendlyName))) || ent;
+      const name = (state && state.attributes && (state.attributes.friendly_name || state.attributes.friendlyName)) || ent;
 
-      // Prefer explicit `attributes.series` if present (template sensors)
+      // Prefer explicit attributes.series if present
       let raw = state && state.attributes && state.attributes.series;
       let data = this._normalizeSeries(raw);
 
-      // If no `series`, try to build series from REST `attributes.results`
+      // If no series, build from attributes.results
       if ((!data || data.length === 0) && state && state.attributes && state.attributes.results) {
         let results = state.attributes.results;
-        // If HA serialized results as a string (YAML-like), try to parse it
         if (typeof results === 'string') {
           try {
             results = JSON.parse(results);
           } catch (e) {
-            // fallback: simple YAML-ish parser for common fields (date/start + weight/height/head_circumference)
+            // Fallback: YAML-ish parser
             const items = results.split(/\n-\s+/).map(s => s.trim()).filter(Boolean);
             const parsed = [];
             for (const it of items) {
@@ -100,12 +106,14 @@ class BabyBuddyGrowthCard extends HTMLElement {
               const weightMatch = it.match(/weight:\s*([0-9.]+)/i);
               const heightMatch = it.match(/height:\s*([0-9.]+)/i);
               const headMatch = it.match(/head_circumference:\s*([0-9.]+)/i);
+              const amountMatch = it.match(/amount:\s*([0-9.]+)/i);
               const ts = startMatch && startMatch[1];
               if (!ts) continue;
               const obj = { _ts: ts };
               if (weightMatch) obj.weight = Number(weightMatch[1]);
               if (heightMatch) obj.height = Number(heightMatch[1]);
               if (headMatch) obj.head_circumference = Number(headMatch[1]);
+              if (amountMatch) obj.amount = Number(amountMatch[1]);
               parsed.push(obj);
             }
             results = parsed;
@@ -125,7 +133,6 @@ class BabyBuddyGrowthCard extends HTMLElement {
             else if ('amount' in item && item.amount != null) y = Number(item.amount);
             built.push([x, y]);
           }
-          // sort ascending by timestamp
           built.sort((a, b) => a[0] - b[0]);
           data = built;
         }
@@ -133,11 +140,13 @@ class BabyBuddyGrowthCard extends HTMLElement {
 
       const len = (data && data.length) || 0;
       const dispName = labelMap[ent] || name;
-      const seriesObj = { name: dispName, data };
+      const unit = unitMap[ent] || ''; // per-entity unit (e.g., "kg", "cm")
+      const seriesObj = { name: unit ? `${dispName} (${unit})` : dispName, data };
       if (colorMap[ent]) seriesObj.color = colorMap[ent];
+
       console.debug('growth-card entity', ent, 'stateExists', !!state, 'seriesLen', len);
       series.push(seriesObj);
-      info.push({ entity: ent, found: !!state, seriesLen: len });
+      info.push({ entity: ent, found: !!state, seriesLen: len, unit });
     }
 
     const zoomOpts = {
@@ -147,16 +156,33 @@ class BabyBuddyGrowthCard extends HTMLElement {
       autoScaleYaxis: false
     };
 
+    // If you want a single y-axis title, pick the first non-empty unit
+    const axisUnitTitle = series.find(s => /\(([^)]+)\)$/.test(s.name));
+    const yUnit = axisUnitTitle ? axisUnitTitle.name.match(/\(([^)]+)\)$/)[1] : (this.config.graph_unit || '');
+
     const options = {
       chart: { type: this.config.chart_type || 'line', height: this.config.height || 320, zoom: zoomOpts },
       stroke: { width: 3 },
       series: series,
       xaxis: { type: 'datetime' },
       legend: { show: true },
-      tooltip: { x: { format: 'dd MMM yyyy HH:mm' } }
+      tooltip: {
+        x: { format: 'dd MMM yyyy HH:mm' },
+        y: {
+          formatter: (val) => {
+            if (!isFinite(val)) return val;
+            // Tooltip unit preference: if graph_unit is set, use it; else use first unit found
+            const unit = this.config.graph_unit || yUnit || '';
+            return unit ? `${val} ${unit}` : String(val);
+          }
+        }
+      },
+      yaxis: {
+        title: { text: yUnit || this.config.graph_unit || undefined }
+      }
     };
 
-    // optional timespan (hours) -- set xaxis range to [max - timespan, max]
+    // optional timespan (hours)
     try {
       const tsHours = this.config && (this.config.timespan_hours || Number(this.config.timespan_hours));
       if (tsHours && !isNaN(tsHours) && tsHours > 0) {
@@ -168,7 +194,7 @@ class BabyBuddyGrowthCard extends HTMLElement {
       }
     } catch(e) { console.warn(e); }
 
-    // disable scroll-to-zoom: if configured, install capture-phase wheel blocker
+    // disable scroll-to-zoom
     try {
       const shouldBlock = this.config && this.config.disable_scroll_zoom;
       const installBlocker = () => {
@@ -197,13 +223,13 @@ class BabyBuddyGrowthCard extends HTMLElement {
       if (shouldBlock) installBlocker(); else removeBlocker();
     } catch(e) { console.warn(e); }
 
-    // show debug info in-card if enabled
+    // debug info
     try {
       if (this.config && this.config.debug === false) {
         this._debugEl.style.display = 'none';
       } else {
         this._debugEl.style.display = 'block';
-        this._debugEl.textContent = 'Entities:\n' + info.map(i => `${i.entity}: found=${i.found}, seriesLen=${i.seriesLen}`).join('\n');
+        this._debugEl.textContent = 'Entities:\n' + info.map(i => `${i.entity}: found=${i.found}, seriesLen=${i.seriesLen}, unit=${i.unit||'-'}`).join('\n');
       }
     } catch (e) { console.warn(e); }
 
@@ -231,6 +257,8 @@ class BabyBuddyGrowthCard extends HTMLElement {
         { name: 'entities', required: true, selector: { entity: { multiple: true } } },
         { name: 'entity_labels', selector: { text: {} } },
         { name: 'entity_colors', selector: { text: {} } },
+        { name: 'entity_units', selector: { text: {} } },  // NEW
+        { name: 'graph_unit', selector: { text: {} } },    // optional global unit for tooltip/axis
         { name: 'height', selector: { number: {} } },
         { name: 'chart_type', selector: { select: { options: [ { value: 'line', label: 'Line' }, { value: 'area', label: 'Area' }, { value: 'scatter', label: 'Scatter' } ] } } },
         { name: 'timespan_hours', selector: { number: {} } },
@@ -238,12 +266,25 @@ class BabyBuddyGrowthCard extends HTMLElement {
         { name: 'debug', selector: { boolean: {} } }
       ],
       computeLabel: (schema) => {
-        const m = { entities: 'Entities', height: 'Chart height', chart_type: 'Chart type', debug: 'Show debug panel', entity_labels: 'Entity labels (JSON)', entity_colors: 'Entity colors (JSON)' };
+        const m = {
+          entities: 'Entities',
+          height: 'Chart height',
+          chart_type: 'Chart type',
+          debug: 'Show debug panel',
+          entity_labels: 'Entity labels (JSON)',
+          entity_colors: 'Entity colors (JSON)',
+          entity_units: 'Entity units (JSON)',       // NEW
+          graph_unit: 'Global unit (optional)',      // NEW
+          timespan_hours: 'Timespan (hours)',
+          disable_scroll_zoom: 'Disable scroll zoom'
+        };
         return m[schema.name];
       },
       computeHelper: (schema) => {
-        if (schema.name === 'entity_labels') return 'JSON object mapping entity_id to label, e.g. {"sensor.weight":"Weight"}';
-        if (schema.name === 'entity_colors') return 'JSON object mapping entity_id to hex color, e.g. {"sensor.weight":"#ff0000"}';
+        if (schema.name === 'entity_labels') return 'JSON: {"sensor.weight":"Weight","sensor.height":"Height"}';
+        if (schema.name === 'entity_colors') return 'JSON: {"sensor.weight":"#ff0000","sensor.height":"#00aa00"}';
+        if (schema.name === 'entity_units') return 'JSON: {"sensor.weight":"kg","sensor.height":"cm","sensor.head":"cm"}';
+        if (schema.name === 'graph_unit') return 'Single unit applied to tooltip and y-axis title if per-entity units are not specified.';
         if (schema.name === 'timespan_hours') return 'Initial timespan to show in hours (optional)';
         if (schema.name === 'disable_scroll_zoom') return 'Disable zooming with mouse wheel';
         return undefined;
@@ -251,6 +292,7 @@ class BabyBuddyGrowthCard extends HTMLElement {
       assertConfig: (config) => {
         if (config.entity_labels) { try { JSON.parse(config.entity_labels); } catch (e) { throw new Error('entity_labels must be valid JSON'); } }
         if (config.entity_colors) { try { JSON.parse(config.entity_colors); } catch (e) { throw new Error('entity_colors must be valid JSON'); } }
+        if (config.entity_units) { try { JSON.parse(config.entity_units); } catch (e) { throw new Error('entity_units must be valid JSON'); } }
       }
     };
   }
@@ -262,8 +304,7 @@ window.customCards.push({
   type: "babybuddy-growth-card",
   name: "BabyBuddy Growth Card",
   description: "Displays growth metrics using ApexCharts",
-  preview: true,  // optional, allows showing in editor preview
+  preview: true,
 });
 
 BabyBuddyGrowthCard.getStubConfig = function() { return { entities: [], debug: true }; };
-
