@@ -89,12 +89,54 @@ feed_colors:
   bottle: '#2ca02c'
   other: '#7f7f7f'
 ```
+ 
+🍼 Week Feedings card
+The Week Feedings card shows a split bar per day for the last N days (default 7), with left vs right counts and a subtitle showing total feedings and optional total minutes. All text is configurable/translateable, with singular/plural forms. Icon is configurable and defaults to mdi:baby-bottle.
 
-UI editor
+Example:
+````
+type: 'custom:babybuddy-feedings-card'
+entity: sensor.babybuddy_api_feedings
+days: 7
+title: Breastfeeding
+subtitle: Last week
+label_left: left
+label_right: right
 
-- The timeline card editor now exposes fields to set the feedings/diaper entities, a persist key, and JSON inputs for `feed_labels` and `feed_colors`. Enter JSON like `{"left":"Left","right":"Right"}` into those fields and the editor will validate and pass them into the card config.
+# Pluralization
+label_feedings_singular: feeding
+label_feedings_plural: feedings
+label_minutes_singular: minute
+label_minutes_plural: minutes
 
+# Relative day strings
+label_today: today
+label_yesterday: yesterday
+label_days_ago_fmt: '{n} days ago'
 
+# Appearance
+show_minutes: true
+icon: mdi:baby-bottle
+color_left: '#1f77b4'
+color_right: '#ff7f0e'
+bar_height: 28
+```
+
+Localization example (Swedish):
+```
+title: Amning
+subtitle: Senaste veckan
+label_left: vänster
+label_right: höger
+label_feedings_singular: matning
+label_feedings_plural: matningar
+label_minutes_singular: minut
+label_minutes_plural: minuter
+label_today: idag
+label_yesterday: igår
+label_days_ago_fmt: '{n} dagar sedan'
+icon: mdi:baby-bottle
+```
 
 Notes
 - The cards automatically load ApexCharts from CDN; if your environment blocks CDNs, self-host the library and add it as a resource before the cards.
