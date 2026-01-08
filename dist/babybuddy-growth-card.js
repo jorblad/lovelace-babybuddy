@@ -263,7 +263,7 @@ class BabyBuddyGrowthCard extends HTMLElement {
         { name: 'chart_type', selector: { select: { options: [ { value: 'line', label: 'Line' }, { value: 'area', label: 'Area' }, { value: 'scatter', label: 'Scatter' } ] } } },
         { name: 'timespan_hours', selector: { number: {} } },
         { name: 'disable_scroll_zoom', selector: { boolean: {} } },
-        { name: 'debug', selector: { boolean: {} } }
+        { name: 'debug', selector: { boolean: {} }, default: false }
       ],
       computeLabel: (schema) => {
         const m = {
