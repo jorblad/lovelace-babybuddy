@@ -61,8 +61,60 @@ class BabyBuddyTimelineCard extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host { display:block; }
-        #chart { width: 100%; height: ${Number(this.config?.height || 320)}px; }
-        #debug { font-size:12px; color:#444; margin-top:8px; white-space:pre-wrap; }
+        /* Card text follows theme colors */
+        ha-card, .card, #chart, #debug {
+          color: var(--primary-text-color);
+        }
+
+        /* Debug text and secondary labels */
+        #debug {
+          font-size: 12px;
+          color: var(--secondary-text-color);
+          margin-top: 8px;
+          white-space: pre-wrap;
+        }
+
+        #chart {
+          width: 100%; 
+          height: 320px;
+        }
+
+        /* ApexCharts readability and contrast */
+        /* Axis labels and legend text use theme color */
+        .apexcharts-xaxis text,
+        .apexcharts-yaxis text,
+        .apexcharts-legend-text {
+          fill: var(--primary-text-color) !important;
+          color: var(--primary-text-color) !important;
+        }
+
+        /* Grid lines softened (optional) */
+        .apexcharts-gridline {
+          stroke: rgba(255,255,255,0.15) !important;
+        }
+
+        /* Tooltip contrast and theme integration */
+        .apexcharts-tooltip {
+          color: var(--primary-text-color) !important;
+          background: rgba(0,0,0,0.6) !important; /* good contrast on light/dark themes */
+          border: 1px solid rgba(255,255,255,0.15) !important;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.35) !important;
+        }
+
+        /* Tooltip title/date line */
+        .apexcharts-tooltip-title {
+          background: transparent !important;
+          color: var(--primary-text-color) !important;
+          border-bottom: 1px solid rgba(255,255,255,0.15) !important;
+        }
+
+        /* Optional subtle text-shadow to aid contrast on dark backgrounds */
+        .apexcharts-xaxis text,
+        .apexcharts-yaxis text,
+        .apexcharts-legend-text,
+        .apexcharts-tooltip {
+          text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+        }
       </style>
       <div id="chart"></div>
       <div id="debug"></div>
@@ -284,23 +336,77 @@ class BabyBuddyTimelineCard extends HTMLElement {
     }
 
     const zoomOpts = { enabled:true, type:'x', allowMouseWheelZoom:!(this.config.disable_scroll_zoom), autoScaleYaxis:false };
+
     const options = {
-      chart:{height:this.config.height||320,type:'scatter',zoom:zoomOpts},
+      chart: {
+        height: this.config.height || 320,
+        type: 'scatter',
+        zoom: zoomOpts,
+        animations: { enabled: true },
+        toolbar: { 
+          show: true,
+          tools: {
+            download: true,
+            selection: true,
+            zoom: true,
+            zoomin: true,
+            zoomout: true,
+            pan: true,
+            reset: true
+          },
+          autoSelected: 'pan'
+        },
+      },
       series,
-      xaxis:{type:'datetime'},
-      yaxis:{labels:{show:false}},
-      markers:{size:6},
+      xaxis: { type: 'datetime' },
+      yaxis: { labels: { show: false } },
+
+      // Improve hit area and visibility on mobile
+      markers: {
+        size: 6,           // base marker size
+        hover: { size: 10, sizeOffset: 3 }, // larger on hover/touch
+        strokeWidth: 0
+      },
+
+      // Make tooltips easier to trigger: no need to intersect exactly
       tooltip: {
+        shared: false,        // scatter works best per-point
+        intersect: false,     // allow hovering near the point to trigger
         x: {
           formatter: function(val, opts) {
             const meta = opts?.seriesIndex != null && opts?.w?.config?.series[opts.seriesIndex]?.data?.[opts.dataPointIndex]?.meta;
             if (meta && meta.originalX) return new Date(meta.originalX).toLocaleString();
             return new Date(val).toLocaleString();
           }
-        }
+        },
+        y: {
+          formatter: function(val, opts) {
+            // you can customize per-series text here if desired
+            return '';
+          }
+        },
+        onDatasetHover: { highlightDataSeries: true }
       },
-      grid:{xaxis:{lines:{show:true}},yaxis:{lines:{show:true}}}
+
+      // Make the hover target a bit more forgiving
+      states: {
+        hover: { filter: { type: 'none' } }, // don't dim others, keeps visibility
+        active: { filter: { type: 'none' } }
+      },
+
+      // Slightly bigger selection area around markers
+      stroke: {
+        width: 0
+      },
+
+      grid: { xaxis: { lines: { show: true } }, yaxis: { lines: { show: true } } },
+
+      // Optional: show small labels when a point is tapped/hovered (mobile feedback)
+      dataLabels: {
+        enabled: false
+      }
     };
+
     if (forceMidnight && compareXMin===null) { const d=new Date(); d.setHours(0,0,0,0); compareXMin=d.getTime(); compareXMax=d.getTime()+DAY_MS; }
     if (compareXMin!==null) { options.xaxis.min=compareXMin; options.xaxis.max=compareXMax; options.xaxis.tickAmount=24; options.xaxis.tickPlacement='on'; options.xaxis.labels={datetimeUTC:false}; }
     if (compareYMin!==null) { options.yaxis.min=compareYMin; options.yaxis.max=compareYMax; options.yaxis.labels={show:false}; options.yaxis.tickAmount=offsets.length; } else { options.yaxis.min=0; options.yaxis.max=4; }
