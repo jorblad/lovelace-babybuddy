@@ -5,21 +5,73 @@ class BabyBuddyGrowthCard extends HTMLElement {
   }
 
   connectedCallback() {
-    if (this._initialized) return;
-    this.attachShadow({ mode: 'open' });
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host { display:block; }
-        #chart { width: 100%; height: 320px; }
-        #debug { font-size: 12px; color: #444; margin-top:8px; white-space:pre-wrap; }
-      </style>
-      <div id="chart"></div>
-      <div id="debug"></div>
-    `;
-    this._chartEl = this.shadowRoot.getElementById('chart');
-    this._debugEl = this.shadowRoot.getElementById('debug');
-    this._initialized = true;
-  }
+  if (this._initialized) return;
+  this.attachShadow({ mode: 'open' });
+  this.shadowRoot.innerHTML = `
+    <style>
+      :host { display:block; }
+      /* Card text follows theme colors */
+      ha-card, .card, #chart, #debug {
+        color: var(--primary-text-color);
+      }
+
+      /* Debug text and secondary labels */
+      #debug {
+        font-size: 12px;
+        color: var(--secondary-text-color);
+        margin-top: 8px;
+        white-space: pre-wrap;
+      }
+
+      #chart {
+        width: 100%; 
+        height: 320px;
+      }
+
+      /* ApexCharts readability and contrast */
+      /* Axis labels and legend text use theme color */
+      .apexcharts-xaxis text,
+      .apexcharts-yaxis text,
+      .apexcharts-legend-text {
+        fill: var(--primary-text-color) !important;
+        color: var(--primary-text-color) !important;
+      }
+
+      /* Grid lines softened (optional) */
+      .apexcharts-gridline {
+        stroke: rgba(255,255,255,0.15) !important;
+      }
+
+      /* Tooltip contrast and theme integration */
+      .apexcharts-tooltip {
+        color: var(--primary-text-color) !important;
+        background: rgba(0,0,0,0.6) !important; /* good contrast on light/dark themes */
+        border: 1px solid rgba(255,255,255,0.15) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.35) !important;
+      }
+
+      /* Tooltip title/date line */
+      .apexcharts-tooltip-title {
+        background: transparent !important;
+        color: var(--primary-text-color) !important;
+        border-bottom: 1px solid rgba(255,255,255,0.15) !important;
+      }
+
+      /* Optional subtle text-shadow to aid contrast on dark backgrounds */
+      .apexcharts-xaxis text,
+      .apexcharts-yaxis text,
+      .apexcharts-legend-text,
+      .apexcharts-tooltip {
+        text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+      }
+    </style>
+    <div id="chart"></div>
+    <div id="debug"></div>
+  `;
+  this._chartEl = this.shadowRoot.getElementById('chart');
+  this._debugEl = this.shadowRoot.getElementById('debug');
+  this._initialized = true;
+}
 
   async _loadApex() {
     if (window.ApexCharts) return;
@@ -161,13 +213,42 @@ class BabyBuddyGrowthCard extends HTMLElement {
     const yUnit = axisUnitTitle ? axisUnitTitle.name.match(/\(([^)]+)\)$/)[1] : (this.config.graph_unit || '');
 
     const options = {
-      chart: { type: this.config.chart_type || 'line', height: this.config.height || 320, zoom: zoomOpts },
+      chart: {
+        type: this.config.chart_type || 'line', height: this.config.height || 320,
+        zoom: zoomOpts,
+        toolbar: { 
+          show: true,
+          tools: {
+            download: true,
+            selection: true,
+            zoom: true,
+            zoomin: true,
+            zoomout: true,
+            pan: true,
+            reset: true
+          },
+          autoSelected: 'pan'
+        },
+      },
       stroke: { width: 3 },
       series: series,
       xaxis: { type: 'datetime' },
       legend: { show: true },
+      toolbar: { 
+        show: true,
+        tools: {
+          download: true,
+          selection: true,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: true,
+          reset: true
+        },
+        autoSelected: 'pan'
+      },
       tooltip: {
-        x: { format: 'dd MMM yyyy HH:mm' },
+        x: { format: 'yyyy-MM-dd HH:mm' },
         y: {
           formatter: (val) => {
             if (!isFinite(val)) return val;
