@@ -6,10 +6,11 @@ BabyBuddy custom Lovelace cards
 [![License](https://img.shields.io/github/license/jorblad/lovelace-babybuddy)](LICENSE)
 
 
-This folder contains two small custom Lovelace cards that plot the time-series attributes produced by the template sensors:
+This folder contains aomw small custom Lovelace cards that plot the time-series attributes produced by babybuddy rest-sensors.
 
 - `babybuddy-growth-card.js` — line charts for growth metrics (weight, height, head circumference).
 - `babybuddy-timeline-card.js` — timeline scatter chart for feedings and diaper events (wet/solid).
+- `babybuddy-feedings-card.js` — card that shows comparison between feeding-types over a number of days.
 
 ---
 
@@ -37,6 +38,8 @@ resources:
   - url: /local/custom_cards/babybuddy-growth-card.js
     type: module
   - url: /local/custom_cards/babybuddy-timeline-card.js
+    type: module
+  - url: /local/custom_cards/babybuddy-feedings-card.js
     type: module
 ```
 
@@ -212,10 +215,6 @@ rest:
     json_attributes:
     - results
 ```
-
- If an entity has an `attributes.series` array the card will use it as before; otherwise the card will attempt to build series from `attributes.results` by looking for common timestamp fields (`start`, `time`, `date`, `timestamp`, `created`, `recorded_at`) and measurement fields such as `weight`, `height`, `head_circumference` or boolean flags (`wet`, `solid`).
-
-This lets people use the cards with minimal or no template sensors if their REST sensor already returns useful `results` payloads.
 
 Troubleshooting: empty graphs
 
