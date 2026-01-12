@@ -5,7 +5,7 @@ BabyBuddy custom Lovelace cards
 [![GitHub Release](https://img.shields.io/github/v/release/jorblad/lovelace-babybuddy)](https://github.com/jorblad/lovelace-babybuddy/releases)
 [![License](https://img.shields.io/github/license/jorblad/lovelace-babybuddy)](LICENSE)
 
-![Overview](https://user-images.githubusercontent.com/5878303/152332130-760cf616-5c40-4825-a482-bb8f1f0f5251.png)
+![Overview](https://github.com/jorblad/lovelace-babybuddy/blob/da59f83e9270a1c0c9ef390b0f12364c47a72e85/docs/images/overview.png)
 
 This folder contains aomw small custom Lovelace cards that plot the time-series attributes produced by babybuddy rest-sensors.
 
