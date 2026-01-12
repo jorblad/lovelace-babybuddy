@@ -5,6 +5,7 @@ BabyBuddy custom Lovelace cards
 [![GitHub Release](https://img.shields.io/github/v/release/jorblad/lovelace-babybuddy)](https://github.com/jorblad/lovelace-babybuddy/releases)
 [![License](https://img.shields.io/github/license/jorblad/lovelace-babybuddy)](LICENSE)
 
+![Overview](https://github.com/jorblad/lovelace-babybuddy/blob/da59f83e9270a1c0c9ef390b0f12364c47a72e85/docs/images/overview.png)
 
 This folder contains aomw small custom Lovelace cards that plot the time-series attributes produced by babybuddy rest-sensors.
 
@@ -45,9 +46,9 @@ resources:
 
 3. The cards depend on ApexCharts which is loaded from CDN by the cards automatically. If you prefer to self-host ApexCharts, add it as a resource before the cards.
 
-Usage examples
+## Usage examples
 
-Growth card
+### Growth card
 
 ```yaml
 type: 'custom:babybuddy-growth-card'
@@ -57,9 +58,13 @@ entities:
   - sensor.babybuddy_latest_head_circumference
 chart_type: line
 height: 360
+debug: false
+disable_scroll_zoom: true
+graph_unit: cm
+block_touch_zoom: false
 ```
 
-Timeline card
+### Timeline card
 
 ```yaml
 type: 'custom:babybuddy-timeline-card'
@@ -93,7 +98,7 @@ feed_colors:
   other: '#7f7f7f'
 ```
  
-🍼 Week Feedings card
+### 🍼 Week Feedings card
 The Week Feedings card shows a split bar per day for the last N days (default 7), with left vs right counts and a subtitle showing total feedings and optional total minutes. All text is configurable/translateable, with singular/plural forms. Icon is configurable and defaults to mdi:baby-bottle.
 
 Example:
@@ -141,10 +146,10 @@ label_days_ago_fmt: '{n} dagar sedan'
 icon: mdi:baby-bottle
 ```
 
-Notes
+### Notes
 - The cards automatically load ApexCharts from CDN; if your environment blocks CDNs, self-host the library and add it as a resource before the cards.
 
-Direct REST sensor support
+### Direct REST sensor support
 
 - These cards don't work with the babybuddy integration since that don't include everything we need to know so you need to create the following rest sensors.
 
@@ -216,7 +221,7 @@ rest:
     - results
 ```
 
-Troubleshooting: empty graphs
+### Troubleshooting: empty graphs
 
 - If the graphs are empty and the browser console shows messages about blocked access to `https://cdn.jsdelivr.net/npm/apexcharts` or similar, your browser's tracking prevention or content blocking is preventing the ApexCharts library from loading from the CDN. The cards will attempt to fall back to a local copy at `/local/custom_cards/libs/apexcharts.min.js`.
 - To self-host ApexCharts:
