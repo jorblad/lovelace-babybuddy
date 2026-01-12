@@ -94,7 +94,7 @@ feed_colors:
 The Week Feedings card shows a split bar per day for the last N days (default 7), with left vs right counts and a subtitle showing total feedings and optional total minutes. All text is configurable/translateable, with singular/plural forms. Icon is configurable and defaults to mdi:baby-bottle.
 
 Example:
-````
+```yaml
 type: 'custom:babybuddy-feedings-card'
 entity: sensor.babybuddy_api_feedings
 days: 7
@@ -123,7 +123,7 @@ bar_height: 28
 ```
 
 Localization example (Swedish):
-```
+```yaml
 title: Amning
 subtitle: Senaste veckan
 label_left: vänster
