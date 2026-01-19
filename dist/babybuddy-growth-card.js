@@ -340,7 +340,7 @@ class BabyBuddyGrowthCard extends HTMLElement {
         { name: 'entity_colors', selector: { text: {} } },
         { name: 'entity_units', selector: { text: {} } },  // NEW
         { name: 'graph_unit', selector: { text: {} } },    // optional global unit for tooltip/axis
-        { name: 'height', selector: { number: {} } },
+        { name: 'height', selector: { number: { min: 200, max: 800, step: 10 } }, default: 320 },
         { name: 'chart_type', selector: { select: { options: [ { value: 'line', label: 'Line' }, { value: 'area', label: 'Area' }, { value: 'scatter', label: 'Scatter' } ] } } },
         { name: 'timespan_hours', selector: { number: {} } },
         { name: 'disable_scroll_zoom', selector: { boolean: {} } },
