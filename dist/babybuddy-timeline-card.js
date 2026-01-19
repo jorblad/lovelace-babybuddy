@@ -19,7 +19,24 @@ class BabyBuddyTimelineCard extends HTMLElement {
         .map((x) => String(x));
     };
 
-    this.config = {
+    // Hex color defaults
+    const defaultHex = {
+      color_left:   '#1f77b4',
+      color_right:  '#ff7f0e',
+      color_bottle: '#2ca02c',
+      color_other:  '#7f7f7f',
+      color_wet:    '#00bfff',
+      color_solid:  '#ff8c00',
+      color_dry:    '#9e9e9e'
+    };
+
+    const isValidHex = (v) => {
+      if (typeof v !== 'string') return false;
+      return /^#[0-9a-fA-F]{6}$/.test(v);
+    };
+
+    // Build config object
+    const cfg = {
       feedings_entity: String(config.feedings_entity || ''),
       diaper_entity: String(config.diaper_entity || ''),
       offsets: config.offsets ?? '',
@@ -32,23 +49,54 @@ class BabyBuddyTimelineCard extends HTMLElement {
 
       label_wet: String(config.label_wet || 'Wet'),
       label_solid: String(config.label_solid || 'Solid'),
+      label_dry: String(config.label_dry || 'Dry'),
 
-      color_left: config.color_left || '#1f77b4',
-      color_right: config.color_right || '#ff7f0e',
-      color_bottle: config.color_bottle || '#2ca02c',
-      color_other: config.color_other || '#7f7f7f',
-      color_wet: config.color_wet || '#00bfff',
-      color_solid: config.color_solid || '#ff8c00',
+      // Hex colors - use defaults if not provided or invalid
+      color_left:   isValidHex(config.color_left)   ? config.color_left   : defaultHex.color_left,
+      color_right:  isValidHex(config.color_right)  ? config.color_right  : defaultHex.color_right,
+      color_bottle: isValidHex(config.color_bottle) ? config.color_bottle : defaultHex.color_bottle,
+      color_other:  isValidHex(config.color_other)  ? config.color_other  : defaultHex.color_other,
+      color_wet:    isValidHex(config.color_wet)    ? config.color_wet    : defaultHex.color_wet,
+      color_solid:  isValidHex(config.color_solid)  ? config.color_solid  : defaultHex.color_solid,
+      color_dry:    isValidHex(config.color_dry)    ? config.color_dry    : defaultHex.color_dry,
 
       debug: !!config.debug,
       compare_as_rows: !!config.compare_as_rows,
       force_midnight: !!config.force_midnight,
       disable_scroll_zoom: !!config.disable_scroll_zoom,
       height: config.height || 320,
+      tooltip_update_debounce_ms: Number(config.tooltip_update_debounce_ms ?? 500),
 
-      // NEW: control how long we delay updates while tooltip is visible
-      tooltip_update_debounce_ms: Number(config.tooltip_update_debounce_ms ?? 500)
+      feed_colors: config.feed_colors || {},
+      feed_labels: config.feed_labels || {}
     };
+
+    this.config = cfg;
+    this._defaultHex = defaultHex;
+  }
+
+
+  _rgbToHex(rgbOrHex) {
+    if (!rgbOrHex) return '#000000';
+    if (Array.isArray(rgbOrHex)) {
+      return '#' + rgbOrHex
+        .map(x => Math.max(0, Math.min(255, x)))
+        .map(x => x.toString(16).padStart(2,'0'))
+        .join('');
+    }
+    if (typeof rgbOrHex === 'string') return rgbOrHex.startsWith('#') ? rgbOrHex : '#000000';
+    return '#000000';
+  }
+
+  _hexToRGB(hex) {
+    if (!hex || typeof hex !== 'string') return [0,0,0];
+    let h = hex.replace(/^#/, '');
+    if (h.length === 3) h = h.split('').map(c => c+c).join('');
+    if (h.length !== 6) return [0,0,0];
+    const r = parseInt(h.slice(0,2),16);
+    const g = parseInt(h.slice(2,4),16);
+    const b = parseInt(h.slice(4,6),16);
+    return [r,g,b];
   }
 
   connectedCallback() {
@@ -72,18 +120,15 @@ class BabyBuddyTimelineCard extends HTMLElement {
     this._chartEl = this.shadowRoot.getElementById('chart');
     this._debugEl = this.shadowRoot.getElementById('debug');
 
-    // NEW: state for suppressing updates while interacting
     this._isTouching = false;
     this._tooltipActive = false;
-    this._lastActive = null; // { seriesIndex, dataPointIndex }
-    this._pendingUpdate = null; // function to run after debounce/touch end
+    this._lastActive = null;
+    this._pendingUpdate = null;
     this._debounceTimer = null;
 
-    // Touch press tracking to pause updates
-    const onTouchStart = (e) => { this._isTouching = true; };
-    const onTouchEnd = (e) => {
+    const onTouchStart = () => { this._isTouching = true; };
+    const onTouchEnd = () => {
       this._isTouching = false;
-      // If there was a pending update, run it now (and restore tooltip if we can)
       if (this._pendingUpdate) {
         const fn = this._pendingUpdate;
         this._pendingUpdate = null;
@@ -160,7 +205,6 @@ class BabyBuddyTimelineCard extends HTMLElement {
     return mappedSeries;
   }
 
-  // NEW: record active tooltip point
   _bindChartEvents(options) {
     options.chart = options.chart || {};
     const existingEvents = options.chart.events || {};
@@ -172,13 +216,10 @@ class BabyBuddyTimelineCard extends HTMLElement {
         self._lastActive = { seriesIndex: config.seriesIndex, dataPointIndex: config.dataPointIndex };
       },
       dataPointMouseLeave: function() {
-        // don't clear immediately; let debounce keep it “active” for a moment
-        // we’ll clear in a setTimeout if needed
         clearTimeout(self._leaveTimer);
         self._leaveTimer = setTimeout(() => { self._tooltipActive = false; }, self.config.tooltip_update_debounce_ms);
       },
       dataPointSelection: function(event, chartContext, config) {
-        // ensure we remember last tapped point on mobile
         self._tooltipActive = true;
         self._lastActive = { seriesIndex: config.seriesIndex, dataPointIndex: config.dataPointIndex };
       }
@@ -187,7 +228,6 @@ class BabyBuddyTimelineCard extends HTMLElement {
     return options;
   }
 
-  // NEW: restore tooltip after update
   _restoreTooltip() {
     try {
       if (!this._chart || !this._lastActive) return;
@@ -196,7 +236,6 @@ class BabyBuddyTimelineCard extends HTMLElement {
       const i = this._lastActive.dataPointIndex;
       const p = w?.config?.series?.[s]?.data?.[i];
       if (!p) return;
-      // simulate a mousemove at the coordinates of the point if available
       const sx = w?.globals?.seriesX?.[s]?.[i];
       const sy = w?.globals?.seriesY?.[s]?.[i];
       if (sx != null && sy != null) {
@@ -204,10 +243,9 @@ class BabyBuddyTimelineCard extends HTMLElement {
         const evt = new MouseEvent('mousemove', { bubbles: true, clientX: rect.left + sx, clientY: rect.top + sy });
         this._chartEl.dispatchEvent(evt);
       }
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
   }
 
-  // NEW: gate updates if tooltip is “active” or touch is down
   async _applyChartUpdate(series, options) {
     const runUpdate = async () => {
       if (!this._chart) {
@@ -217,19 +255,16 @@ class BabyBuddyTimelineCard extends HTMLElement {
         await this._chart.updateOptions(options,false,false);
         await this._chart.updateSeries(series,true);
       }
-      // After update, restore tooltip if we had one
       if (this._tooltipActive && this._lastActive) {
         this._restoreTooltip();
       }
     };
 
-    // If touch is held or tooltip recently active, debounce
     if (this._isTouching || this._tooltipActive) {
       clearTimeout(this._debounceTimer);
-      // store latest update attempt
       this._pendingUpdate = async () => { await runUpdate(); };
       this._debounceTimer = setTimeout(async () => {
-        if (this._isTouching) return; // wait for touchend handler to run it
+        if (this._isTouching) return;
         const fn = this._pendingUpdate;
         this._pendingUpdate = null;
         if (fn) await fn();
@@ -256,23 +291,47 @@ class BabyBuddyTimelineCard extends HTMLElement {
       { left: 'Left', right: 'Right', bottle: 'Bottle', other: 'Other' },
       this.config.feed_labels || {}
     );
-    const methodColors = Object.assign(
-      { left: '#1f77b4', right: '#ff7f0e', bottle: '#2ca02c', other: '#7f7f7f' },
-      this.config.feed_colors || {}
-    );
-    ['left','right','bottle','other'].forEach(k => {
-      const labKey = 'label_' + k; const colKey = 'color_' + k;
-      if (this.config[labKey]) methodLabels[k] = this.config[labKey];
-      if (this.config[colKey]) methodColors[k] = this.config[colKey];
-    });
+
+    const resolveHexFromConfigOrDefault = (fieldName, defHex) => {
+      const v = this.config[fieldName];
+      if (typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v)) return v;
+      return defHex;
+    };
+
+    let methodColors = {
+      left:   resolveHexFromConfigOrDefault('color_left',   this._defaultHex.left),
+      right:  resolveHexFromConfigOrDefault('color_right',  this._defaultHex.right),
+      bottle: resolveHexFromConfigOrDefault('color_bottle', this._defaultHex.bottle),
+      other:  resolveHexFromConfigOrDefault('color_other',  this._defaultHex.other)
+    };
+
+    const feedColorKeyMap = {
+      left_breast: 'left',
+      right_breast: 'right',
+      left: 'left',
+      right: 'right',
+      bottle: 'bottle',
+      other: 'other'
+    };
+    if (this.config.feed_colors && typeof this.config.feed_colors === 'object') {
+      for (const [extKey, hex] of Object.entries(this.config.feed_colors)) {
+        const k = feedColorKeyMap[extKey];
+        if (k && typeof hex === 'string' && hex.trim()) {
+          methodColors[k] = hex;
+        }
+      }
+    }
 
     const diaperLabels = {
       wet: this.config.label_wet || 'Wet',
-      solid: this.config.label_solid || 'Solid'
+      solid: this.config.label_solid || 'Solid',
+      dry: this.config.label_dry || 'Dry'
     };
 
-    const wetColor = this.config.color_wet || '#00bfff';
-    const solidColor = this.config.color_solid || '#ff8c00';
+    const wetColor   = resolveHexFromConfigOrDefault('color_wet',   this._defaultHex.wet);
+    const solidColor = resolveHexFromConfigOrDefault('color_solid', this._defaultHex.solid);
+    const dryColor   = resolveHexFromConfigOrDefault('color_dry',   this._defaultHex.dry);
+
     const compareAsRows = !!this.config.compare_as_rows;
     const forceMidnight = !!this.config.force_midnight;
 
@@ -338,7 +397,9 @@ class BabyBuddyTimelineCard extends HTMLElement {
       }
     }
 
-    let wetPoints=[], solidPoints=[];
+    let wetPoints = [];
+    let solidPoints = [];
+    let dryPoints = [];
     if (diaperState && diaperState.attributes) {
       if (diaperState.attributes.series_wet) wetPoints = this._parseAttr(diaperState.attributes.series_wet).map(p => [p.x,2]);
       if (diaperState.attributes.series_solid) solidPoints = this._parseAttr(diaperState.attributes.series_solid).map(p => [p.x,3]);
@@ -347,10 +408,17 @@ class BabyBuddyTimelineCard extends HTMLElement {
         if (typeof res === 'string') try { res=JSON.parse(res); } catch(e){ res=[]; }
         if (Array.isArray(res)) {
           for (const item of res) {
-            const ts = item.time||item.start||item.date; const x = ts ? Date.parse(ts):null;
+            const ts = item.time || item.start || item.date;
+            const x = ts ? Date.parse(ts) : null;
             if (!x) continue;
-            if (item.wet) wetPoints.push([x,2]);
-            if (item.solid) solidPoints.push([x,3]);
+
+            if (item.wet) {
+              wetPoints.push([x, 2]);
+            } else if (item.solid) {
+              solidPoints.push([x, 3]);
+            } else {
+              dryPoints.push([x, 4]);
+            }
           }
         }
       }
@@ -360,8 +428,28 @@ class BabyBuddyTimelineCard extends HTMLElement {
     for (const k of ['left','right','bottle','other']) {
       series.push(...this._mapSeriesWithOffsets(feedGroups[k], offsets, methodLabels[k], compareAsRows, 0, methodColors[k]));
     }
-    series.push(...this._mapSeriesWithOffsets(wetPoints, offsets, diaperLabels.wet, compareAsRows, 2, wetColor));
-    series.push(...this._mapSeriesWithOffsets(solidPoints, offsets, diaperLabels.solid, compareAsRows, 3, solidColor));
+    series.push(...this._mapSeriesWithOffsets(
+      wetPoints,
+      offsets,
+      diaperLabels.wet,
+      compareAsRows, 2,
+      wetColor
+    ));
+    series.push(...this._mapSeriesWithOffsets(
+      solidPoints,
+      offsets,
+      diaperLabels.solid,
+      compareAsRows, 3,
+      solidColor
+    ));
+    series.push(...this._mapSeriesWithOffsets(
+      dryPoints,
+      offsets,
+      diaperLabels.dry,
+      compareAsRows,
+      4,
+      dryColor
+    ));
 
     let compareXMin=null, compareXMax=null, compareYMin=null, compareYMax=null;
     if (compareAsRows && offsets && offsets.length) {
@@ -414,9 +502,8 @@ class BabyBuddyTimelineCard extends HTMLElement {
 
     if (forceMidnight && compareXMin===null) { const d=new Date(); d.setHours(0,0,0,0); compareXMin=d.getTime(); compareXMax=d.getTime()+DAY_MS; }
     if (compareXMin!==null) { options.xaxis.min=compareXMin; options.xaxis.max=compareXMax; options.xaxis.tickAmount=24; options.xaxis.tickPlacement='on'; options.xaxis.labels={datetimeUTC:false}; }
-    if (compareYMin!==null) { options.yaxis.min=compareYMin; options.yaxis.max=compareYMax; options.yaxis.labels={show:false}; options.yaxis.tickAmount=offsets.length; } else { options.yaxis.min=0; options.yaxis.max=4; }
+    if (compareYMin!==null) { options.yaxis.min=compareYMin; options.yaxis.max=compareYMax; options.yaxis.labels={show:false}; options.yaxis.tickAmount=offsets.length; } else { options.yaxis.min=0; options.yaxis.max=5; }
 
-    // Apply with debounce/restore
     await this._applyChartUpdate(series, options);
 
     if (this.config.debug!==false) {
@@ -456,25 +543,33 @@ class BabyBuddyTimelineCard extends HTMLElement {
       schema: [
         { name: 'feedings_entity', required: false, selector: { entity: { domain: 'sensor' } } },
         { name: 'diaper_entity', required: false, selector: { entity: { domain: 'sensor' } } },
+
         { type: 'section', label: 'Feed Labels' },
         { name: 'label_left', selector: { text: { multiline: false } }, default: 'Left' },
         { name: 'label_right', selector: { text: { multiline: false } }, default: 'Right' },
         { name: 'label_bottle', selector: { text: { multiline: false } }, default: 'Bottle' },
         { name: 'label_other', selector: { text: { multiline: false } }, default: 'Other' },
+
         { type: 'section', label: 'Feed Colors' },
-        { name: 'color_left', selector: { color: { mode: 'hex' } }, default: '#1f77b4' },
-        { name: 'color_right', selector: { color: { mode: 'hex' } }, default: '#ff7f0e' },
-        { name: 'color_bottle', selector: { color: { mode: 'hex' } }, default: '#2ca02c' },
-        { name: 'color_other', selector: { color: { mode: 'hex' } }, default: '#7f7f7f' },
+        { name: 'color_left', selector: { text: { multiline: false } }, default: '#1f77b4' },
+        { name: 'color_right', selector: { text: { multiline: false } }, default: '#ff7f0e' },
+        { name: 'color_bottle', selector: { text: { multiline: false } }, default: '#2ca02c' },
+        { name: 'color_other', selector: { text: { multiline: false } }, default: '#7f7f7f' },
+
         { type: 'section', label: 'Diaper Labels' },
         { name: 'label_wet', selector: { text: { multiline: false } }, default: 'Wet' },
         { name: 'label_solid', selector: { text: { multiline: false } }, default: 'Solid' },
+        { name: 'label_dry', selector: { text: {} }, default: 'Dry' },
+
         { type: 'section', label: 'Diaper Colors' },
-        { name: 'color_wet', selector: { color: { mode: 'hex' } }, default: '#00bfff' },
-        { name: 'color_solid', selector: { color: { mode: 'hex' } }, default: '#ff8c00' },
+        { name: 'color_wet', selector: { text: { multiline: false } }, default: '#00bfff' },
+        { name: 'color_solid', selector: { text: { multiline: false } }, default: '#ff8c00' },
+        { name: 'color_dry', selector: { text: { multiline: false } }, default: '#9e9e9e' },
+
         { type: 'section', label: 'Offsets' },
         { name: 'offsets', selector: { text: { multiline: false } }, default: '' },
         { name: 'offset_labels', selector: { text: { multiline: false } }, default: '' },
+
         { type: 'section', label: 'Options' },
         { name: 'compare_as_rows', selector: { boolean: {} }, default: false },
         { name: 'force_midnight', selector: { boolean: {} }, default: false },
@@ -497,8 +592,10 @@ class BabyBuddyTimelineCard extends HTMLElement {
           color_other: 'Other Color',
           label_wet: 'Wet Label',
           label_solid: 'Solid Label',
+          label_dry: 'Dry Label',
           color_wet: 'Wet Color',
           color_solid: 'Solid Color',
+          color_dry: 'Dry Color',
           offsets: 'Offsets',
           offset_labels: 'Offset Labels',
           compare_as_rows: 'Compare as Rows',
@@ -511,10 +608,23 @@ class BabyBuddyTimelineCard extends HTMLElement {
         return labels[schema.name] || schema.label || '';
       },
       computeHelper: (schema) => {
-        if (schema.name === 'offsets') return 'Example: [0,1,2] or "0,1,2" or "24h,48h". Units: d or h.';
-        if (schema.name === 'offset_labels') return 'Comma-separated or JSON array. Mapped by index to offsets.';
-        if (schema.name === 'disable_scroll_zoom') return 'Prevents mouse wheel zoom in the card.';
-        if (schema.name === 'tooltip_update_debounce_ms') return 'Delay re-render while tooltip is open to avoid flicker.';
+        if (schema && typeof schema.name === 'string') {
+          if (schema.name === 'offsets') {
+            return 'Example: [0,1,2] or "0,1,2" or "24h,48h". Units: d or h.';
+          }
+          if (schema.name === 'offset_labels') {
+            return 'Comma-separated or JSON array. Mapped by index to offsets.';
+          }
+          if (schema.name === 'disable_scroll_zoom') {
+            return 'Prevents mouse wheel zoom in the card.';
+          }
+          if (schema.name === 'tooltip_update_debounce_ms') {
+            return 'Delay re-render while tooltip is open to avoid flicker.';
+          }
+          if (schema.name.startsWith('color_')) {
+            return 'Enter a hex color code (e.g., #ff0000)';
+          }
+        }
         return undefined;
       }
     };
