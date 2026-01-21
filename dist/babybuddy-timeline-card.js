@@ -288,7 +288,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
     const diaperState = diaperEnt ? hass.states[diaperEnt] : null;
 
     const methodLabels = Object.assign(
-      { left: 'Left', right: 'Right', bottle: 'Bottle', other: 'Other' },
+      { left: this.config.label_left, right: this.config.label_right, bottle: this.config.label_bottle, other: this.config.label_other },
       this.config.feed_labels || {}
     );
 
