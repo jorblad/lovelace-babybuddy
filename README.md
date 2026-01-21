@@ -12,6 +12,8 @@ This folder contains aomw small custom Lovelace cards that plot the time-series 
 - `babybuddy-growth-card.js` — line charts for growth metrics (weight, height, head circumference).
 - `babybuddy-timeline-card.js` — timeline scatter chart for feedings and diaper events (wet/solid).
 - `babybuddy-feedings-card.js` — card that shows comparison between feeding-types over a number of days.
+- `babybuddy-add-diaper-card.js` — popup form card for logging diaper changes to the babybuddy integration.
+- `babybuddy-add-feeding-card.js` — popup form card for logging feedings to the babybuddy integration.
 
 ---
 
@@ -41,6 +43,10 @@ resources:
   - url: /local/custom_cards/babybuddy-timeline-card.js
     type: module
   - url: /local/custom_cards/babybuddy-feedings-card.js
+    type: module
+  - url: /local/custom_cards/babybuddy-add-diaper-card.js
+    type: module
+  - url: /local/custom_cards/babybuddy-add-feeding-card.js
     type: module
 ```
 
@@ -97,6 +103,102 @@ feed_colors:
   bottle: '#2ca02c'
   other: '#7f7f7f'
 ```
+
+### Add Diaper Card
+
+A popup form card for quickly logging diaper changes to the babybuddy integration.
+
+**Requirements:**
+- [BabyBuddy integration](https://github.com/jcgoette/babybuddy) must be installed from HACS
+
+**Basic usage:**
+
+```yaml
+type: custom:babybuddy-add-diaper-card
+device_id: YOUR_BABYBUDDY_DEVICE_ID
+```
+
+**Configuration options:**
+
+```yaml
+type: custom:babybuddy-add-diaper-card
+device_id: YOUR_BABYBUDDY_DEVICE_ID
+title: 'Log Diaper Change'
+button_text: 'Log Diaper'
+
+# Defaults
+default_type: Wet  # Wet, Solid, Wet and Solid, or Dry
+default_color: Black  # Black, Brown, Green, Yellow
+default_amount: 1
+
+# Optional fields
+show_amount: false  # Show amount selector
+show_notes: false  # Show notes field
+show_color: false  # Show color selector
+
+# Tags for quick selection
+tags:
+  - tag1
+  - tag2
+```
+
+**Diaper types:**
+- Wet
+- Solid
+- Wet and Solid
+- Dry
+
+### Add Feeding Card
+
+A popup form card for quickly logging feedings to the babybuddy integration.
+
+**Requirements:**
+- [BabyBuddy integration](https://github.com/jcgoette/babybuddy) must be installed from HACS
+
+**Basic usage:**
+
+```yaml
+type: custom:babybuddy-add-feeding-card
+device_id: YOUR_BABYBUDDY_DEVICE_ID
+```
+
+**Configuration options:**
+
+```yaml
+type: custom:babybuddy-add-feeding-card
+device_id: YOUR_BABYBUDDY_DEVICE_ID
+title: 'Log Feeding'
+button_text: 'Log Feeding'
+
+# Defaults
+default_type: Breast milk  # Breast milk, Formula, Fortified breast milk, Solid food
+default_method: Bottle  # Bottle, Left breast, Right breast, Both breasts, Parent fed, Self fed
+default_duration: 10  # Duration in minutes (1-120)
+default_amount: 1
+
+# Optional fields
+show_amount: false  # Show amount field
+show_notes: false  # Show notes field
+
+# Tags for quick selection
+tags:
+  - tag1
+  - tag2
+```
+
+**Feeding types:**
+- Breast milk
+- Formula
+- Fortified breast milk
+- Solid food
+
+**Feeding methods:**
+- Bottle
+- Left breast
+- Right breast
+- Both breasts
+- Parent fed
+- Self fed
  
 ### 🍼 Week Feedings card
 The Week Feedings card shows a split bar per day for the last N days (default 7), with left vs right counts and a subtitle showing total feedings and optional total minutes. All text is configurable/translateable, with singular/plural forms. Icon is configurable and defaults to mdi:baby-bottle.
