@@ -43,7 +43,8 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
       default_amount: Number(config.default_amount || 1),
       tags: Array.isArray(config.tags) ? config.tags.map(t => String(t)) : [],
       show_notes: !!config.show_notes,
-      show_amount: !!config.show_amount
+      show_amount: !!config.show_amount,
+      show_color: !!config.show_color
     };
   }
 
@@ -170,9 +171,11 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
               <mwc-list-item value="Wet">${this._t('diaper.types.wet')}</mwc-list-item>
               <mwc-list-item value="Solid">${this._t('diaper.types.solid')}</mwc-list-item>
               <mwc-list-item value="Wet and Solid">${this._t('diaper.types.wet_and_solid')}</mwc-list-item>
+              <mwc-list-item value="Dry">${this._t('diaper.types.dry')}</mwc-list-item>
             </ha-select>
           </div>
 
+          ${this.config.show_color ? `
           <div class="form-group">
             <label>${this._t('diaper.form.color')}</label>
             <ha-select id="colorSelect">
@@ -182,6 +185,7 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
               <mwc-list-item value="Yellow">${this._t('diaper.colors.yellow')}</mwc-list-item>
             </ha-select>
           </div>
+          ` : ''}
 
           ${this.config.show_amount ? `
           <div class="form-group">
@@ -230,7 +234,9 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
 
     // Set default values
     this._typeSelect.value = this.config.default_type;
-    this._colorSelect.value = this.config.default_color;
+    if (this._colorSelect) {
+      this._colorSelect.value = this.config.default_color;
+    }
 
     // Populate tags
     if (this._tagsContainer) {
@@ -268,7 +274,7 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
   async _handleSubmit() {
     const time = this._timeInput.value;
     const type = this._typeSelect.value;
-    const color = this._colorSelect.value;
+    const color = this._colorSelect ? this._colorSelect.value : null;
     const amount = this._amountInput ? Number(this._amountInput.value) : 1;
     const notes = this._notesInput ? this._notesInput.value : '';
 
@@ -286,9 +292,13 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
     // Build action data
     const actionData = {
       time: timeStr,
-      type: type,
-      color: color
+      type: type
     };
+
+    // Only include color if show_color is enabled and color is selected
+    if (this.config.show_color && color) {
+      actionData.color = color;
+    }
 
     if (amount && this.config.show_amount) {
       actionData.amount = amount;
@@ -392,12 +402,14 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
               options: [
                 { value: 'Wet', label: t('diaper.types.wet') },
                 { value: 'Solid', label: t('diaper.types.solid') },
-                { value: 'Wet and Solid', label: t('diaper.types.wet_and_solid') }
+                { value: 'Wet and Solid', label: t('diaper.types.wet_and_solid') },
+                { value: 'Dry', label: t('diaper.types.dry') }
               ]
             } 
           }, 
           default: 'Wet' 
         },
+        { name: 'show_color', selector: { boolean: {} }, default: false },
         { 
           name: 'default_color', 
           selector: { 

@@ -19,7 +19,8 @@ const BabyBuddyTranslations = {
       types: {
         wet: 'Wet',
         solid: 'Solid',
-        wet_and_solid: 'Wet and Solid'
+        wet_and_solid: 'Wet and Solid',
+        dry: 'Dry'
       },
       colors: {
         black: 'Black',
@@ -122,7 +123,8 @@ const BabyBuddyTranslations = {
       types: {
         wet: 'Nat',
         solid: 'Ontlasting',
-        wet_and_solid: 'Nat en Ontlasting'
+        wet_and_solid: 'Nat en Ontlasting',
+        dry: 'Droog'
       },
       colors: {
         black: 'Zwart',
@@ -225,7 +227,8 @@ const BabyBuddyTranslations = {
       types: {
         wet: 'Nass',
         solid: 'Fest',
-        wet_and_solid: 'Nass und Fest'
+        wet_and_solid: 'Nass und Fest',
+        dry: 'Trocken'
       },
       colors: {
         black: 'Schwarz',
@@ -328,7 +331,8 @@ const BabyBuddyTranslations = {
       types: {
         wet: 'Mouillé',
         solid: 'Solide',
-        wet_and_solid: 'Mouillé et Solide'
+        wet_and_solid: 'Mouillé et Solide',
+        dry: 'Sec'
       },
       colors: {
         black: 'Noir',
@@ -431,7 +435,8 @@ const BabyBuddyTranslations = {
       types: {
         wet: 'Mojado',
         solid: 'Sólido',
-        wet_and_solid: 'Mojado y Sólido'
+        wet_and_solid: 'Mojado y Sólido',
+        dry: 'Seco'
       },
       colors: {
         black: 'Negro',
@@ -534,7 +539,8 @@ const BabyBuddyTranslations = {
       types: {
         wet: 'Vått',
         solid: 'Avföring',
-        wet_and_solid: 'Vått och Avföring'
+        wet_and_solid: 'Vått och Avföring',
+        dry: 'Torrt'
       },
       colors: {
         black: 'Svart',
