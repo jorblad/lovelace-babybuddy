@@ -204,6 +204,37 @@ const BabyBuddyTranslations = {
         defaults: 'Defaults',
         notes_tags: 'Notes & Tags'
       }
+    },
+    note: {
+      card: {
+        title: 'Add Note',
+        button_text: 'Add Note'
+      },
+      form: {
+        time: 'Time',
+        note: 'Note',
+        note_placeholder: 'Write your note…',
+        tags: 'Tags',
+        submit: 'Add Note',
+        cancel: 'Cancel'
+      },
+      notifications: {
+        success: 'Note added successfully!',
+        error: 'Error: {error}'
+      },
+      sections: {
+        options: 'Options'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        show_time: 'Show Time Picker',
+        tags: 'Available Tags'
+      },
+      config_helper: {
+        tags: 'These tags will be selectable when adding a note'
+      }
     }
   },
   nl: {
@@ -1273,14 +1304,57 @@ const BabyBuddyTranslations = {
         device_id: 'Baby-enhet',
         default_type: 'Standardtyp av mätning',
         show_notes: 'Visa anteckningsfält',
-        tags: 'Tillgängliga taggar',
-        tags_helper: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
+        tags: 'Tillgängliga taggar'
+      },
+      config_helper: {
+        title: 'Anpassad titel för kortet',
+        button_text: 'Text för knappen',
+        device_id: 'Enhet för barnet',
+        default_type: 'Vilken typ av mätning som ska väljas som standard',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
       },
       sections: {
         defaults: 'Standardvärden',
         notes_tags: 'Anteckningar & Taggar'
       }
+    },
+    note: {
+      card: {
+        title: 'Lägg till anteckning',
+        button_text: 'Lägg till anteckning'
+      },
+      form: {
+        time: 'Tid',
+        note: 'Anteckning',
+        note_placeholder: 'Skriv din anteckning…',
+        tags: 'Taggar',
+        submit: 'Spara anteckning',
+        cancel: 'Avbryt'
+      },
+      notifications: {
+        success: 'Anteckningen sparades!',
+        error: 'Fel: {error}'
+      },
+      sections: {
+        options: 'Alternativ'
+      },
+      config: {
+        title: 'Korttitel',
+        button_text: 'Knapptext',
+        device_id: 'Baby-enhet',
+        show_time: 'Visa tidsväljare',
+        tags: 'Tillgängliga taggar'
+      },
+      config_helper: {
+        title: 'Anpassad titel för kortet',
+        button_text: 'Text för knappen',
+        device_id: 'Enhet för barnet',
+        show_time: 'Om tidsväljaren ska visas när en anteckning skapas',
+        tags: 'Dessa taggar kan väljas när en anteckning skapas'
+      }
     }
+
   }
   };
 
