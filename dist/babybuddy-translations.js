@@ -131,6 +131,40 @@ const BabyBuddyTranslations = {
         show_times: 'Display timestamps',
         relative_times: 'Show relative times instead of absolute'
       }
+    },
+    sleep: {
+      card: {
+        title: 'Add Sleep',
+        button_text: 'Log Sleep'
+      },
+      form: {
+        start_time: 'Start and End Time',
+        time_help: 'Start time and end time (left to right)',
+        nap: 'Nap',
+        duration: 'Duration (minutes)',
+        notes: 'Notes',
+        tags: 'Tags',
+        submit: 'Add Sleep',
+        cancel: 'Cancel'
+      },
+      notifications: {
+        success: 'Sleep logged successfully!',
+        error: 'Error: {error}'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        default_nap: 'Default Nap',
+        default_duration: 'Default Duration (minutes)',
+        show_notes: 'Show Notes Field',
+        tags: 'Available Tags',
+        tags_helper: 'Enter tag names (one per line) that will appear as toggles in the popup'
+      },
+      sections: {
+        defaults: 'Defaults',
+        notes_tags: 'Notes & Tags'
+      }
     }
   },
   nl: {
@@ -263,6 +297,40 @@ const BabyBuddyTranslations = {
         show_tags: 'Tags voor elke gebeurtenis weergeven',
         show_times: 'Tijdstempels weergeven',
         relative_times: 'Relatieve tijden in plaats van absolute'
+      }
+    },
+    sleep: {
+      card: {
+        title: 'Slaap toevoegen',
+        button_text: 'Slaap registreren'
+      },
+      form: {
+        start_time: 'Start- en eindtijd',
+        time_help: 'Starttijd en eindtijd (van links naar rechts)',
+        nap: 'Slaapje',
+        duration: 'Duur (minuten)',
+        notes: 'Notities',
+        tags: 'Tags',
+        submit: 'Slaap toevoegen',
+        cancel: 'Annuleren'
+      },
+      notifications: {
+        success: 'Slaap succesvol geregistreerd!',
+        error: 'Fout: {error}'
+      },
+      config: {
+        title: 'Kaart titel',
+        button_text: 'Knoptekst',
+        device_id: 'Baby-apparaat',
+        default_nap: 'Standaard slaapje',
+        default_duration: 'Standaard duur (minuten)',
+        show_notes: 'Notitieveld weergeven',
+        tags: 'Beschikbare tags',
+        tags_helper: 'Voer tagnamen in (één per regel) die als schakelaars in het popup-formulier verschijnen'
+      },
+      sections: {
+        defaults: 'Standaarden',
+        notes_tags: 'Notities & Tags'
       }
     }
   },
@@ -397,6 +465,40 @@ const BabyBuddyTranslations = {
         show_times: 'Zeitstempel anzeigen',
         relative_times: 'Relative Zeiten statt absoluter'
       }
+    },
+    sleep: {
+      card: {
+        title: 'Schlaf hinzufügen',
+        button_text: 'Schlaf protokollieren'
+      },
+      form: {
+        start_time: 'Start- und Endzeit',
+        time_help: 'Startzeit und Endzeit (von links nach rechts)',
+        nap: 'Schläfchen',
+        duration: 'Dauer (Minuten)',
+        notes: 'Notizen',
+        tags: 'Tags',
+        submit: 'Schlaf hinzufügen',
+        cancel: 'Abbrechen'
+      },
+      notifications: {
+        success: 'Schlaf erfolgreich protokolliert!',
+        error: 'Fehler: {error}'
+      },
+      config: {
+        title: 'Kartentitel',
+        button_text: 'Schaltflächentext',
+        device_id: 'Baby-Gerät',
+        default_nap: 'Standard-Schläfchen',
+        default_duration: 'Standarddauer (Minuten)',
+        show_notes: 'Notizfeld anzeigen',
+        tags: 'Verfügbare Tags',
+        tags_helper: 'Geben Sie Tagnamen ein (einer pro Zeile), die als Umschalter im Popup-Formular erscheinen'
+      },
+      sections: {
+        defaults: 'Standard',
+        notes_tags: 'Notizen & Tags'
+      }
     }
   },
   fr: {
@@ -530,6 +632,40 @@ const BabyBuddyTranslations = {
         show_times: 'Afficher les horodatages',
         relative_times: 'Afficher les heures relatives au lieu des heures absolues'
       }
+    },
+    sleep: {
+      card: {
+        title: 'Ajouter un sommeil',
+        button_text: 'Enregistrer le sommeil'
+      },
+      form: {
+        start_time: 'Heure de début et de fin',
+        time_help: 'Heure de début et heure de fin (de gauche à droite)',
+        nap: 'Sieste',
+        duration: 'Durée (minutes)',
+        notes: 'Notes',
+        tags: 'Tags',
+        submit: 'Ajouter sommeil',
+        cancel: 'Annuler'
+      },
+      notifications: {
+        success: 'Sommeil enregistré avec succès!',
+        error: 'Erreur: {error}'
+      },
+      config: {
+        title: 'Titre de la carte',
+        button_text: 'Texte du bouton',
+        device_id: 'Appareil bébé',
+        default_nap: 'Sieste par défaut',
+        default_duration: 'Durée par défaut (minutes)',
+        show_notes: 'Afficher le champ des notes',
+        tags: 'Tags disponibles',
+        tags_helper: 'Entrez les noms des tags (un par ligne) qui apparaîtront comme des boutons bascule dans le formulaire'
+      },
+      sections: {
+        defaults: 'Valeurs par défaut',
+        notes_tags: 'Notes & Tags'
+      }
     }
   },
   es: {
@@ -662,6 +798,40 @@ const BabyBuddyTranslations = {
         show_tags: 'Mostrar etiquetas para cada evento',
         show_times: 'Mostrar marcas de tiempo',
         relative_times: 'Mostrar horas relativas en lugar de absolutas'
+      }
+    },
+    sleep: {
+      card: {
+        title: 'Agregar sueño',
+        button_text: 'Registrar sueño'
+      },
+      form: {
+        start_time: 'Hora de inicio y fin',
+        time_help: 'Hora de inicio y hora de fin (de izquierda a derecha)',
+        nap: 'Siesta',
+        duration: 'Duración (minutos)',
+        notes: 'Notas',
+        tags: 'Etiquetas',
+        submit: 'Agregar sueño',
+        cancel: 'Cancelar'
+      },
+      notifications: {
+        success: 'Sueño registrado exitosamente!',
+        error: 'Error: {error}'
+      },
+      config: {
+        title: 'Título de la tarjeta',
+        button_text: 'Texto del botón',
+        device_id: 'Dispositivo bebé',
+        default_nap: 'Siesta predeterminada',
+        default_duration: 'Duración predeterminada (minutos)',
+        show_notes: 'Mostrar campo de notas',
+        tags: 'Etiquetas disponibles',
+        tags_helper: 'Ingrese nombres de etiquetas (uno por línea) que aparecerán como botones de alternancia en el formulario'
+      },
+      sections: {
+        defaults: 'Valores predeterminados',
+        notes_tags: 'Notas & Etiquetas'
       }
     }
   },
@@ -825,6 +995,53 @@ const BabyBuddyTranslations = {
         show_delete: 'Visa en knapp för att radera varje händelse',
         tag_colors: 'Ange färger för taggar i formatet tagg:färg (ett per rad)',
         babybuddy_base_url: 'Ange bas-URL för din BabyBuddy-installation för att aktivera länkning till händelsedetaljer, exempel: https://mybabybuddy.instance'
+      }
+    },
+    sleep: {
+      card: {
+        title: 'Lägg till sömn',
+        button_text: 'Registrera sömn'
+      },
+      form: {
+        start_time: 'Start- och sluttid',
+        time_help: 'Starttid och sluttid (från vänster till höger)',
+        nap: 'Sovstund',
+        duration: 'Varaktighet (minuter)',
+        notes: 'Anteckningar',
+        notes_placeholder: 'Valfritt fält för anteckningar...',
+        tags: 'Taggar',
+        submit: 'Lägg till sömn',
+        cancel: 'Avbryt'
+      },
+      nap: {
+        no: "Nej",
+        yes: "Ja"
+      },
+      notifications: {
+        success: 'Sömn registrerad framgångsrikt!',
+        error: 'Fel: {error}'
+      },
+      config: {
+        title: 'Korttitel',
+        button_text: 'Knapptext',
+        device_id: 'Baby-enhet',
+        default_nap: 'Standard sovstund',
+        default_duration: 'Standardvaraktighet (minuter)',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Tillgängliga taggar'
+        },
+      config_helper: {
+        title: 'Anpassad titel för kortet',
+        button_text: 'Text för knappen',
+        device_id: 'Enhet för barnet',
+        default_nap: 'Om standard är ett sovstund eller inte',
+        default_duration: 'Standardvaraktighet i minuter',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
+      },
+      sections: {
+        defaults: 'Standardvärden',
+        notes_tags: 'Anteckningar & Taggar'
       }
     }
   }
