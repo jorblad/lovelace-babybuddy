@@ -261,14 +261,14 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
 
   _setCurrentTimes() {
     const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    
+    const durationMs = this.config.default_duration * 60000;
+    const startTime = new Date(now.getTime() - durationMs);
+    const hours = String(startTime.getHours()).padStart(2, '0');
+    const minutes = String(startTime.getMinutes()).padStart(2, '0');
     this._startTimeInput.value = `${hours}:${minutes}`;
+
     
-    // End time is based on configured duration (default 10 minutes)
-    const durationMs = (this.config.default_duration ?? 10) * 60000;
-    const endTime = new Date(now.getTime() + durationMs);
+    const endTime = new Date(now.getTime());
     const endHours = String(endTime.getHours()).padStart(2, '0');
     const endMinutes = String(endTime.getMinutes()).padStart(2, '0');
     this._endTimeInput.value = `${endHours}:${endMinutes}`;

@@ -131,6 +131,110 @@ const BabyBuddyTranslations = {
         show_times: 'Display timestamps',
         relative_times: 'Show relative times instead of absolute'
       }
+    },
+    sleep: {
+      card: {
+        title: 'Add Sleep',
+        button_text: 'Log Sleep'
+      },
+      form: {
+        start_time: 'Start and End Time',
+        time_help: 'Start time and end time (left to right)',
+        nap: 'Nap',
+        duration: 'Duration (minutes)',
+        notes: 'Notes',
+        tags: 'Tags',
+        submit: 'Add Sleep',
+        cancel: 'Cancel'
+      },
+      notifications: {
+        success: 'Sleep logged successfully!',
+        error: 'Error: {error}'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        default_nap: 'Default Nap',
+        default_duration: 'Default Duration (minutes)',
+        show_notes: 'Show Notes Field',
+        tags: 'Available Tags',
+        tags_helper: 'Enter tag names (one per line) that will appear as toggles in the popup'
+      },
+      sections: {
+        defaults: 'Defaults',
+        notes_tags: 'Notes & Tags'
+      }
+    },
+    growth: {
+      card: {
+        title: 'Add Measurement',
+        button_text: 'Log Measurement'
+      },
+      form: {
+        type: 'Measurement Type',
+        date: 'Date',
+        value_weight: 'Weight (kg)',
+        value_height: 'Height (cm)',
+        value_head: 'Head circumference (cm)',
+        notes: 'Notes',
+        tags: 'Tags',
+        submit: 'Add Measurement',
+        cancel: 'Cancel'
+      },
+      types: {
+        weight: 'Weight',
+        height: 'Height',
+        head: 'Head circumference'
+      },
+      notifications: {
+        success: 'Measurement logged successfully!',
+        error: 'Error: {error}'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        default_type: 'Default Measurement Type',
+        show_notes: 'Show Notes Field',
+        tags: 'Available Tags',
+        tags_helper: 'Enter tag names (one per line) that will appear as toggles in the popup'
+      },
+      sections: {
+        defaults: 'Defaults',
+        notes_tags: 'Notes & Tags'
+      }
+    },
+    note: {
+      card: {
+        title: 'Add Note',
+        button_text: 'Add Note'
+      },
+      form: {
+        time: 'Time',
+        note: 'Note',
+        note_placeholder: 'Write your note…',
+        tags: 'Tags',
+        submit: 'Add Note',
+        cancel: 'Cancel'
+      },
+      notifications: {
+        success: 'Note added successfully!',
+        error: 'Error: {error}'
+      },
+      sections: {
+        options: 'Options'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        show_time: 'Show Time Picker',
+        tags: 'Available Tags'
+      },
+      config_helper: {
+        tags: 'These tags will be selectable when adding a note'
+      }
     }
   },
   nl: {
@@ -264,7 +368,81 @@ const BabyBuddyTranslations = {
         show_times: 'Tijdstempels weergeven',
         relative_times: 'Relatieve tijden in plaats van absolute'
       }
+    },
+    sleep: {
+      card: {
+        title: 'Slaap toevoegen',
+        button_text: 'Slaap registreren'
+      },
+      form: {
+        start_time: 'Start- en eindtijd',
+        time_help: 'Starttijd en eindtijd (van links naar rechts)',
+        nap: 'Slaapje',
+        duration: 'Duur (minuten)',
+        notes: 'Notities',
+        tags: 'Tags',
+        submit: 'Slaap toevoegen',
+        cancel: 'Annuleren'
+      },
+      notifications: {
+        success: 'Slaap succesvol geregistreerd!',
+        error: 'Fout: {error}'
+      },
+      config: {
+        title: 'Kaart titel',
+        button_text: 'Knoptekst',
+        device_id: 'Baby-apparaat',
+        default_nap: 'Standaard slaapje',
+        default_duration: 'Standaard duur (minuten)',
+        show_notes: 'Notitieveld weergeven',
+        tags: 'Beschikbare tags',
+        tags_helper: 'Voer tagnamen in (één per regel) die als schakelaars in het popup-formulier verschijnen'
+      },
+      sections: {
+        defaults: 'Standaarden',
+        notes_tags: 'Notities & Tags'
+      }
+    },
+    growth: {
+      card: {
+        title: 'Meting toevoegen',
+        button_text: 'Meting registreren'
+      },
+      form: {
+        type: 'Type meting',
+        date: 'Datum',
+        value_weight: 'Gewicht (kg)',
+        value_height: 'Lengte (cm)',
+        value_head: 'Hoofdomtrek (cm)',
+        notes: 'Notities',
+        tags: 'Tags',
+        submit: 'Meting toevoegen',
+        cancel: 'Annuleren'
+      },
+      types: {
+        weight: 'Gewicht',
+        height: 'Lengte',
+        head: 'Hoofdomtrek'
+      },
+      notifications: {
+        success: 'Meting succesvol geregistreerd!',
+        error: 'Fout: {error}'
+      },
+      config: {
+        title: 'Kaarttitel',
+        button_text: 'Knoptekst',
+        device_id: 'Baby-apparaat',
+        default_type: 'Standaard meettype',
+        show_notes: 'Notitieveld weergeven',
+        tags: 'Beschikbare tags',
+        tags_helper: 'Voer tagnamen in (één per regel) die als schakelaars verschijnen'
+      },
+      sections: {
+        defaults: 'Standaarden',
+        notes_tags: 'Notities & Tags'
+      }
     }
+
   },
   de: {
     diaper: {
@@ -396,6 +574,79 @@ const BabyBuddyTranslations = {
         show_tags: 'Tags für jedes Ereignis anzeigen',
         show_times: 'Zeitstempel anzeigen',
         relative_times: 'Relative Zeiten statt absoluter'
+      }
+    },
+    sleep: {
+      card: {
+        title: 'Schlaf hinzufügen',
+        button_text: 'Schlaf protokollieren'
+      },
+      form: {
+        start_time: 'Start- und Endzeit',
+        time_help: 'Startzeit und Endzeit (von links nach rechts)',
+        nap: 'Schläfchen',
+        duration: 'Dauer (Minuten)',
+        notes: 'Notizen',
+        tags: 'Tags',
+        submit: 'Schlaf hinzufügen',
+        cancel: 'Abbrechen'
+      },
+      notifications: {
+        success: 'Schlaf erfolgreich protokolliert!',
+        error: 'Fehler: {error}'
+      },
+      config: {
+        title: 'Kartentitel',
+        button_text: 'Schaltflächentext',
+        device_id: 'Baby-Gerät',
+        default_nap: 'Standard-Schläfchen',
+        default_duration: 'Standarddauer (Minuten)',
+        show_notes: 'Notizfeld anzeigen',
+        tags: 'Verfügbare Tags',
+        tags_helper: 'Geben Sie Tagnamen ein (einer pro Zeile), die als Umschalter im Popup-Formular erscheinen'
+      },
+      sections: {
+        defaults: 'Standard',
+        notes_tags: 'Notizen & Tags'
+      }
+    },
+    growth: {
+      card: {
+        title: 'Messung hinzufügen',
+        button_text: 'Messung protokollieren'
+      },
+      form: {
+        type: 'Messtyp',
+        date: 'Datum',
+        value_weight: 'Gewicht (kg)',
+        value_height: 'Größe (cm)',
+        value_head: 'Kopfumfang (cm)',
+        notes: 'Notizen',
+        tags: 'Tags',
+        submit: 'Messung hinzufügen',
+        cancel: 'Abbrechen'
+      },
+      types: {
+        weight: 'Gewicht',
+        height: 'Größe',
+        head: 'Kopfumfang'
+      },
+      notifications: {
+        success: 'Messung erfolgreich gespeichert!',
+        error: 'Fehler: {error}'
+      },
+      config: {
+        title: 'Kartentitel',
+        button_text: 'Schaltflächentext',
+        device_id: 'Baby-Gerät',
+        default_type: 'Standard-Messtyp',
+        show_notes: 'Notizfeld anzeigen',
+        tags: 'Verfügbare Tags',
+        tags_helper: 'Geben Sie Tagnamen ein (einer pro Zeile), die als Umschalter im Popup angezeigt werden'
+      },
+      sections: {
+        defaults: 'Standard',
+        notes_tags: 'Notizen & Tags'
       }
     }
   },
@@ -530,7 +781,81 @@ const BabyBuddyTranslations = {
         show_times: 'Afficher les horodatages',
         relative_times: 'Afficher les heures relatives au lieu des heures absolues'
       }
+    },
+    sleep: {
+      card: {
+        title: 'Ajouter un sommeil',
+        button_text: 'Enregistrer le sommeil'
+      },
+      form: {
+        start_time: 'Heure de début et de fin',
+        time_help: 'Heure de début et heure de fin (de gauche à droite)',
+        nap: 'Sieste',
+        duration: 'Durée (minutes)',
+        notes: 'Notes',
+        tags: 'Tags',
+        submit: 'Ajouter sommeil',
+        cancel: 'Annuler'
+      },
+      notifications: {
+        success: 'Sommeil enregistré avec succès!',
+        error: 'Erreur: {error}'
+      },
+      config: {
+        title: 'Titre de la carte',
+        button_text: 'Texte du bouton',
+        device_id: 'Appareil bébé',
+        default_nap: 'Sieste par défaut',
+        default_duration: 'Durée par défaut (minutes)',
+        show_notes: 'Afficher le champ des notes',
+        tags: 'Tags disponibles',
+        tags_helper: 'Entrez les noms des tags (un par ligne) qui apparaîtront comme des boutons bascule dans le formulaire'
+      },
+      sections: {
+        defaults: 'Valeurs par défaut',
+        notes_tags: 'Notes & Tags'
+      }
+    },
+    growth: {
+      card: {
+        title: 'Ajouter une mesure',
+        button_text: 'Enregistrer la mesure'
+      },
+      form: {
+        type: 'Type de mesure',
+        date: 'Date',
+        value_weight: 'Poids (kg)',
+        value_height: 'Taille (cm)',
+        value_head: 'Périmètre crânien (cm)',
+        notes: 'Notes',
+        tags: 'Tags',
+        submit: 'Ajouter la mesure',
+        cancel: 'Annuler'
+      },
+      types: {
+        weight: 'Poids',
+        height: 'Taille',
+        head: 'Périmètre crânien'
+      },
+      notifications: {
+        success: 'Mesure enregistrée avec succès !',
+        error: 'Erreur : {error}'
+      },
+      config: {
+        title: 'Titre de la carte',
+        button_text: 'Texte du bouton',
+        device_id: 'Appareil bébé',
+        default_type: 'Type de mesure par défaut',
+        show_notes: 'Afficher le champ des notes',
+        tags: 'Tags disponibles',
+        tags_helper: 'Entrez les noms des tags (un par ligne) affichés comme boutons dans la fenêtre'
+      },
+      sections: {
+        defaults: 'Valeurs par défaut',
+        notes_tags: 'Notes & Tags'
+      }
     }
+
   },
   es: {
     diaper: {
@@ -663,7 +988,81 @@ const BabyBuddyTranslations = {
         show_times: 'Mostrar marcas de tiempo',
         relative_times: 'Mostrar horas relativas en lugar de absolutas'
       }
+    },
+    sleep: {
+      card: {
+        title: 'Agregar sueño',
+        button_text: 'Registrar sueño'
+      },
+      form: {
+        start_time: 'Hora de inicio y fin',
+        time_help: 'Hora de inicio y hora de fin (de izquierda a derecha)',
+        nap: 'Siesta',
+        duration: 'Duración (minutos)',
+        notes: 'Notas',
+        tags: 'Etiquetas',
+        submit: 'Agregar sueño',
+        cancel: 'Cancelar'
+      },
+      notifications: {
+        success: 'Sueño registrado exitosamente!',
+        error: 'Error: {error}'
+      },
+      config: {
+        title: 'Título de la tarjeta',
+        button_text: 'Texto del botón',
+        device_id: 'Dispositivo bebé',
+        default_nap: 'Siesta predeterminada',
+        default_duration: 'Duración predeterminada (minutos)',
+        show_notes: 'Mostrar campo de notas',
+        tags: 'Etiquetas disponibles',
+        tags_helper: 'Ingrese nombres de etiquetas (uno por línea) que aparecerán como botones de alternancia en el formulario'
+      },
+      sections: {
+        defaults: 'Valores predeterminados',
+        notes_tags: 'Notas & Etiquetas'
+      }
+    },
+    growth: {
+      card: {
+        title: 'Agregar medición',
+        button_text: 'Registrar medición'
+      },
+      form: {
+        type: 'Tipo de medición',
+        date: 'Fecha',
+        value_weight: 'Peso (kg)',
+        value_height: 'Altura (cm)',
+        value_head: 'Circunferencia de la cabeza (cm)',
+        notes: 'Notas',
+        tags: 'Etiquetas',
+        submit: 'Agregar medición',
+        cancel: 'Cancelar'
+      },
+      types: {
+        weight: 'Peso',
+        height: 'Altura',
+        head: 'Circunferencia de la cabeza'
+      },
+      notifications: {
+        success: '¡Medición registrada correctamente!',
+        error: 'Error: {error}'
+      },
+      config: {
+        title: 'Título de la tarjeta',
+        button_text: 'Texto del botón',
+        device_id: 'Dispositivo bebé',
+        default_type: 'Tipo de medición predeterminado',
+        show_notes: 'Mostrar campo de notas',
+        tags: 'Etiquetas disponibles',
+        tags_helper: 'Ingrese nombres de etiquetas (uno por línea) que aparecerán como botones'
+      },
+      sections: {
+        defaults: 'Valores predeterminados',
+        notes_tags: 'Notas & Etiquetas'
+      }
     }
+
   },
   sv: {
     diaper: {
@@ -826,7 +1225,136 @@ const BabyBuddyTranslations = {
         tag_colors: 'Ange färger för taggar i formatet tagg:färg (ett per rad)',
         babybuddy_base_url: 'Ange bas-URL för din BabyBuddy-installation för att aktivera länkning till händelsedetaljer, exempel: https://mybabybuddy.instance'
       }
+    },
+    sleep: {
+      card: {
+        title: 'Lägg till sömn',
+        button_text: 'Registrera sömn'
+      },
+      form: {
+        start_time: 'Start- och sluttid',
+        time_help: 'Starttid och sluttid (från vänster till höger)',
+        nap: 'Sovstund',
+        duration: 'Varaktighet (minuter)',
+        notes: 'Anteckningar',
+        notes_placeholder: 'Valfritt fält för anteckningar...',
+        tags: 'Taggar',
+        submit: 'Lägg till sömn',
+        cancel: 'Avbryt'
+      },
+      nap: {
+        no: "Nej",
+        yes: "Ja"
+      },
+      notifications: {
+        success: 'Sömn registrerad framgångsrikt!',
+        error: 'Fel: {error}'
+      },
+      config: {
+        title: 'Korttitel',
+        button_text: 'Knapptext',
+        device_id: 'Baby-enhet',
+        default_nap: 'Standard sovstund',
+        default_duration: 'Standardvaraktighet (minuter)',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Tillgängliga taggar'
+        },
+      config_helper: {
+        title: 'Anpassad titel för kortet',
+        button_text: 'Text för knappen',
+        device_id: 'Enhet för barnet',
+        default_nap: 'Om standard är ett sovstund eller inte',
+        default_duration: 'Standardvaraktighet i minuter',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
+      },
+      sections: {
+        defaults: 'Standardvärden',
+        notes_tags: 'Anteckningar & Taggar'
+      }
+    },
+    growth: {
+      card: {
+        title: 'Lägg till mätning',
+        button_text: 'Registrera mätning'
+      },
+      form: {
+        type: 'Typ av mätning',
+        date: 'Datum',
+        value_weight: 'Vikt (kg)',
+        value_height: 'Längd (cm)',
+        value_head: 'Huvudomfång (cm)',
+        notes: 'Anteckningar',
+        tags: 'Taggar',
+        submit: 'Lägg till mätning',
+        cancel: 'Avbryt'
+      },
+      types: {
+        weight: 'Vikt',
+        height: 'Längd',
+        head: 'Huvudomfång'
+      },
+      notifications: {
+        success: 'Mätningen registrerades framgångsrikt!',
+        error: 'Fel: {error}'
+      },
+      config: {
+        title: 'Korttitel',
+        button_text: 'Knapptext',
+        device_id: 'Baby-enhet',
+        default_type: 'Standardtyp av mätning',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Tillgängliga taggar'
+      },
+      config_helper: {
+        title: 'Anpassad titel för kortet',
+        button_text: 'Text för knappen',
+        device_id: 'Enhet för barnet',
+        default_type: 'Vilken typ av mätning som ska väljas som standard',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
+      },
+      sections: {
+        defaults: 'Standardvärden',
+        notes_tags: 'Anteckningar & Taggar'
+      }
+    },
+    note: {
+      card: {
+        title: 'Lägg till anteckning',
+        button_text: 'Lägg till anteckning'
+      },
+      form: {
+        time: 'Tid',
+        note: 'Anteckning',
+        note_placeholder: 'Skriv din anteckning…',
+        tags: 'Taggar',
+        submit: 'Spara anteckning',
+        cancel: 'Avbryt'
+      },
+      notifications: {
+        success: 'Anteckningen sparades!',
+        error: 'Fel: {error}'
+      },
+      sections: {
+        options: 'Alternativ'
+      },
+      config: {
+        title: 'Korttitel',
+        button_text: 'Knapptext',
+        device_id: 'Baby-enhet',
+        show_time: 'Visa tidsväljare',
+        tags: 'Tillgängliga taggar'
+      },
+      config_helper: {
+        title: 'Anpassad titel för kortet',
+        button_text: 'Text för knappen',
+        device_id: 'Enhet för barnet',
+        show_time: 'Om tidsväljaren ska visas när en anteckning skapas',
+        tags: 'Dessa taggar kan väljas när en anteckning skapas'
+      }
     }
+
   }
   };
 
