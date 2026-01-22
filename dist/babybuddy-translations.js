@@ -102,6 +102,35 @@ const BabyBuddyTranslations = {
         optional_fields: 'Optional Fields',
         tags: 'Tags'
       }
+    },
+    overview: {
+      card: {
+        title_diaper: 'Recent Diaper Changes',
+        title_feeding: 'Recent Feedings'
+      },
+      just_now: 'Just now',
+      ago: 'ago',
+      no_data: 'No data available',
+      mode_diaper: 'Diaper Changes',
+      mode_feeding: 'Feedings',
+      config: {
+        title: 'Card Title',
+        entity: 'Entity',
+        mode: 'Mode',
+        limit: 'Limit',
+        show_tags: 'Show Tags',
+        show_times: 'Show Times',
+        relative_times: 'Relative Times'
+      },
+      config_helper: {
+        title: 'Custom title for the card',
+        entity: 'Sensor entity with results array',
+        mode: 'Show diaper changes or feedings',
+        limit: 'Maximum number of events to display',
+        show_tags: 'Display tags for each event',
+        show_times: 'Display timestamps',
+        relative_times: 'Show relative times instead of absolute'
+      }
     }
   },
   nl: {
@@ -205,6 +234,35 @@ const BabyBuddyTranslations = {
         defaults: 'Standaarden',
         optional_fields: 'Optionele velden',
         tags: 'Tags'
+      }
+    },
+    overview: {
+      card: {
+        title_diaper: 'Recente Luierwissels',
+        title_feeding: 'Recente Voedingen'
+      },
+      just_now: 'Zojuist',
+      ago: 'geleden',
+      no_data: 'Geen gegevens beschikbaar',
+      mode_diaper: 'Luierwissels',
+      mode_feeding: 'Voedingen',
+      config: {
+        title: 'Kaart titel',
+        entity: 'Entiteit',
+        mode: 'Modus',
+        limit: 'Limiet',
+        show_tags: 'Tags weergeven',
+        show_times: 'Tijden weergeven',
+        relative_times: 'Relatieve tijden'
+      },
+      config_helper: {
+        title: 'Aangepaste titel voor de kaart',
+        entity: 'Sensor-entiteit met results-array',
+        mode: 'Luierwissels of voedingen weergeven',
+        limit: 'Maximaal aantal weer te geven gebeurtenissen',
+        show_tags: 'Tags voor elke gebeurtenis weergeven',
+        show_times: 'Tijdstempels weergeven',
+        relative_times: 'Relatieve tijden in plaats van absolute'
       }
     }
   },
@@ -310,6 +368,35 @@ const BabyBuddyTranslations = {
         optional_fields: 'Optionale Felder',
         tags: 'Tags'
       }
+    },
+    overview: {
+      card: {
+        title_diaper: 'Kürzliche Windelwechsel',
+        title_feeding: 'Kürzliche Fütterungen'
+      },
+      just_now: 'Gerade eben',
+      ago: 'vor',
+      no_data: 'Keine Daten verfügbar',
+      mode_diaper: 'Windelwechsel',
+      mode_feeding: 'Fütterungen',
+      config: {
+        title: 'Kartentitel',
+        entity: 'Entität',
+        mode: 'Modus',
+        limit: 'Limit',
+        show_tags: 'Tags anzeigen',
+        show_times: 'Zeiten anzeigen',
+        relative_times: 'Relative Zeiten'
+      },
+      config_helper: {
+        title: 'Benutzerdefinierter Titel für die Karte',
+        entity: 'Sensor-Entität mit Results-Array',
+        mode: 'Windelwechsel oder Fütterungen anzeigen',
+        limit: 'Maximale Anzahl anzuzeigender Ereignisse',
+        show_tags: 'Tags für jedes Ereignis anzeigen',
+        show_times: 'Zeitstempel anzeigen',
+        relative_times: 'Relative Zeiten statt absoluter'
+      }
     }
   },
   fr: {
@@ -413,6 +500,35 @@ const BabyBuddyTranslations = {
         defaults: 'Valeurs par défaut',
         optional_fields: 'Champs optionnels',
         tags: 'Tags'
+      }
+    },
+    overview: {
+      card: {
+        title_diaper: 'Changements de couche récents',
+        title_feeding: 'Alimentations récentes'
+      },
+      just_now: 'À l\'instant',
+      ago: 'il y a',
+      no_data: 'Aucune donnée disponible',
+      mode_diaper: 'Changements de couche',
+      mode_feeding: 'Alimentations',
+      config: {
+        title: 'Titre de la carte',
+        entity: 'Entité',
+        mode: 'Mode',
+        limit: 'Limite',
+        show_tags: 'Afficher les tags',
+        show_times: 'Afficher les heures',
+        relative_times: 'Heures relatives'
+      },
+      config_helper: {
+        title: 'Titre personnalisé pour la carte',
+        entity: 'Entité capteur avec tableau de résultats',
+        mode: 'Afficher les changements de couche ou les alimentations',
+        limit: 'Nombre maximum d\'événements à afficher',
+        show_tags: 'Afficher les tags pour chaque événement',
+        show_times: 'Afficher les horodatages',
+        relative_times: 'Afficher les heures relatives au lieu des heures absolues'
       }
     }
   },
@@ -518,13 +634,42 @@ const BabyBuddyTranslations = {
         optional_fields: 'Campos opcionales',
         tags: 'Etiquetas'
       }
+    },
+    overview: {
+      card: {
+        title_diaper: 'Cambios de pañal recientes',
+        title_feeding: 'Alimentaciones recientes'
+      },
+      just_now: 'Justo ahora',
+      ago: 'hace',
+      no_data: 'No hay datos disponibles',
+      mode_diaper: 'Cambios de pañal',
+      mode_feeding: 'Alimentaciones',
+      config: {
+        title: 'Título de la tarjeta',
+        entity: 'Entidad',
+        mode: 'Modo',
+        limit: 'Límite',
+        show_tags: 'Mostrar etiquetas',
+        show_times: 'Mostrar horas',
+        relative_times: 'Horas relativas'
+      },
+      config_helper: {
+        title: 'Título personalizado para la tarjeta',
+        entity: 'Entidad del sensor con matriz de resultados',
+        mode: 'Mostrar cambios de pañal o alimentaciones',
+        limit: 'Número máximo de eventos a mostrar',
+        show_tags: 'Mostrar etiquetas para cada evento',
+        show_times: 'Mostrar marcas de tiempo',
+        relative_times: 'Mostrar horas relativas en lugar de absolutas'
+      }
     }
   },
   sv: {
     diaper: {
       card: {
         title: 'Lägg till blöjbyte',
-        button_text: 'Registrera blöja'
+        button_text: 'Registrera blöjbyte'
       },
       form: {
         time: 'Tid',
@@ -561,8 +706,21 @@ const BabyBuddyTranslations = {
         show_amount: 'Visa mängdfält',
         default_amount: 'Standardmängd',
         show_notes: 'Visa anteckningsfält',
+        show_color: 'Visa färgfält',
         tags: 'Tillgängliga taggar',
         tags_helper: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
+      },
+      config_helper: {
+        title: 'Anpassad titel för kortet',
+        button_text: 'Text för knappen',
+        device_id: 'Enhet för barnet',
+        default_type: 'Vilken typ som ska väljas som standard',
+        default_color: 'Vilken färg som ska väljas som standard',
+        show_color: 'Om färgfältet ska visas i formuläret',
+        show_amount: 'Visa mängdfält',
+        default_amount: 'Standardmängd',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
       },
       sections: {
         defaults: 'Standardvärden',
@@ -614,17 +772,63 @@ const BabyBuddyTranslations = {
         show_amount: 'Visa mängdfält',
         default_amount: 'Standardmängd',
         show_notes: 'Visa anteckningsfält',
-        tags: 'Tillgängliga taggar',
-        tags_helper: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
+        tags: 'Tillgängliga taggar'
+      },
+      config_helper: {
+        title: 'Anpassad titel för kortet',
+        button_text: 'Text för knappen',
+        device_id: 'Enhet för barnet',
+        default_type: 'Vilken typ som ska väljas som standard',
+        default_method: 'Vilken metod som ska väljas som standard',
+        default_duration: 'Standardvaraktighet i minuter',
+        show_amount: 'Visa mängdfält',
+        default_amount: 'Standardmängd',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
       },
       sections: {
         defaults: 'Standardvärden',
         optional_fields: 'Valfria fält',
         tags: 'Taggar'
       }
+    },
+    overview: {
+      card: {
+        title_diaper: 'Senaste blöjbyten',
+        title_feeding: 'Senaste matningarna'
+      },
+      just_now: 'Nu',
+      ago: 'sedan',
+      no_data: 'Ingen data tillgänglig',
+      mode_diaper: 'Blöjbyten',
+      mode_feeding: 'Matningar',
+      config: {
+        title: 'Korttitel',
+        entity: 'Entitet',
+        mode: 'Läge',
+        limit: 'Gräns',
+        show_tags: 'Visa taggar',
+        show_times: 'Visa tider',
+        show_delete: 'Visa radera-knapp',
+        relative_times: 'Relativa tider',
+        tag_colors: 'Taggfärger',
+        babybuddy_base_url: 'Bas-URL för BabyBuddy'
+      },
+      config_helper: {
+        title: 'Anpassad titel för kortet',
+        entity: 'Sensor-entitet med results-array',
+        mode: 'Visa blöjbyten eller matningar',
+        limit: 'Maximalt antal händelser att visa',
+        show_tags: 'Visa taggar för varje händelse',
+        show_times: 'Visa tidsstämplar',
+        relative_times: 'Visa relativa tider istället för absoluta',
+        show_delete: 'Visa en knapp för att radera varje händelse',
+        tag_colors: 'Ange färger för taggar i formatet tagg:färg (ett per rad)',
+        babybuddy_base_url: 'Ange bas-URL för din BabyBuddy-installation för att aktivera länkning till händelsedetaljer, exempel: https://mybabybuddy.instance'
+      }
     }
   }
-};
+  };
 
 // Utility function to get translation
 function getTranslation(language, path, replacements = {}) {

@@ -1,15 +1,15 @@
 class BabyBuddyAddFeedingCard extends HTMLElement {
-  _getLanguage() {
-    if (this._hass && this._hass.language) {
-      const lang = this._hass.language.split('-')[0];
+  _getLanguage(hass = this._hass) {
+    if (hass?.language) {
+      const lang = hass.language.split('-')[0];
       const translations = window.BabyBuddyTranslations || BabyBuddyTranslations;
       return translations[lang] ? lang : 'en';
     }
     return 'en';
   }
 
-  _t(path) {
-    const lang = this._getLanguage();
+  _t(path, hass = this._hass) {
+    const lang = this._getLanguage(hass);
     const translations = window.BabyBuddyTranslations || BabyBuddyTranslations;
     const langs = translations[lang];
     const keys = path.split('.');
@@ -369,18 +369,12 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
   }
 
   static getConfigForm() {
-    // Create a helper instance to access translations
-    const t = (path) => {
-      const lang = (typeof BabyBuddyTranslations !== 'undefined') ? 'en' : 'en';
-      const translations = (typeof BabyBuddyTranslations !== 'undefined') ? BabyBuddyTranslations[lang] : {};
-      const keys = path.split('.');
-      let value = translations;
-      for (const key of keys) {
-        value = value?.[key];
-        if (!value) break;
-      }
-      return value || path;
-    };
+    const hass =
+      document.querySelector("home-assistant")?.hass;
+
+    // Create a temporary instance just for translations
+    const t = (path) =>
+      BabyBuddyAddFeedingCard.prototype._t(path, hass);
 
     return {
       schema: [
@@ -396,7 +390,7 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
           default: '' 
         },
         
-        { type: 'section', label: t('feeding.sections.defaults') },
+        { type: 'section' },
         { 
           name: 'default_type', 
           selector: { 
@@ -435,7 +429,7 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
           default: 10 
         },
 
-        { type: 'section', label: t('feeding.sections.optional_fields') },
+        { type: 'section' },
         { name: 'show_amount', selector: { boolean: {} }, default: false },
         { name: 'default_amount', selector: { number: { min: 0, step: 0.1 } }, default: 1 },
         { name: 'show_notes', selector: { boolean: {} }, default: false },
@@ -443,20 +437,11 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
         { type: 'section', label: t('feeding.sections.tags') },
         { name: 'tags', selector: { text: { multiple: true } }, default: [] }
       ],
-      computeLabel: (schema) => {
-        const lang = (typeof BabyBuddyTranslations !== 'undefined') ? 'en' : 'en';
-        const translations = (typeof BabyBuddyTranslations !== 'undefined') ? BabyBuddyTranslations[lang] : {};
-        const labels = translations.feeding?.config || {};
-        return labels[schema.name] || schema.label || '';
-      },
-      computeHelper: (schema) => {
-        const lang = (typeof BabyBuddyTranslations !== 'undefined') ? 'en' : 'en';
-        const translations = (typeof BabyBuddyTranslations !== 'undefined') ? BabyBuddyTranslations[lang] : {};
-        const helpers = {
-          tags: translations.feeding?.config?.tags_helper || 'Enter tag names (one per line) that will appear as toggles in the popup'
-        };
-        return helpers[schema.name];
-      }
+      computeLabel: (schema) =>
+        t(`feeding.config.${schema.name}`),
+
+      computeHelper: (schema) =>
+        t(`feeding.config_helper.${schema.name}`)
     };
   }
 }

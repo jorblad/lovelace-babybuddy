@@ -332,6 +332,40 @@ class BabyBuddyGrowthCard extends HTMLElement {
 
   getCardSize() { return 4; }
 
+  _getPreviewData() {
+    // Generate realistic preview data
+    const now = new Date();
+    const createTime = (minutesAgo) => {
+      const d = new Date(now.getTime() - minutesAgo * 60000);
+      return d.toISOString();
+    };
+
+      return [
+        {
+          id: 1,
+          child: 1,
+          time: createTime(5),
+          height: 68.5,
+        },
+        {
+          id: 2,
+          child: 1,
+          time: createTime(45),
+          height: 69.0,
+          notes: 'Test note',
+          tags: ['Pediatrician visit']
+        },
+        {
+          id: 3,
+          child: 1,
+          time: createTime(150),
+          height: 70.5,
+          notes: '',
+          tags: ['Automatisk registrering']
+        }
+      ];
+  }
+
   static getConfigForm() {
     return {
       schema: [

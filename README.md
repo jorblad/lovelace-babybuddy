@@ -14,6 +14,7 @@ This folder contains aomw small custom Lovelace cards that plot the time-series 
 - `babybuddy-feedings-card.js` — card that shows comparison between feeding-types over a number of days.
 - `babybuddy-add-diaper-card.js` — popup form card for logging diaper changes to the babybuddy integration.
 - `babybuddy-add-feeding-card.js` — popup form card for logging feedings to the babybuddy integration.
+- `babybuddy-overview-card.js` — overview card displaying recent diaper changes or feedings with tags and timestamps.
 
 ---
 
@@ -47,6 +48,8 @@ resources:
   - url: /local/custom_cards/babybuddy-add-diaper-card.js
     type: module
   - url: /local/custom_cards/babybuddy-add-feeding-card.js
+    type: module
+  - url: /local/custom_cards/babybuddy-overview-card.js
     type: module
 ```
 
@@ -199,6 +202,66 @@ tags:
 - Both breasts
 - Parent fed
 - Self fed
+
+### Overview Card
+
+A card that displays recent diaper changes or feedings in a list format with timestamps, tags, and event details.
+
+**Requirements:**
+- [BabyBuddy integration](https://github.com/jcgoette/babybuddy) must be installed from HACS
+
+**Basic usage:**
+
+```yaml
+type: custom:babybuddy-overview-card
+entity: sensor.babybuddy_api_changes
+mode: diaper
+```
+
+**Configuration options:**
+
+```yaml
+type: custom:babybuddy-overview-card
+entity: sensor.babybuddy_api_changes  # or sensor.babybuddy_api_feedings
+mode: diaper  # 'diaper' or 'feeding'
+title: 'Recent Changes'  # Optional custom title
+limit: 10  # Maximum number of events to display
+show_tags: true  # Show tags for each event
+show_times: true  # Show timestamps
+relative_times: true  # Show relative times (e.g., "2h ago") instead of absolute
+```
+
+**Features:**
+- Display recent events with relative timestamps ("Just now", "2h ago", "3 days ago")
+- Show event tags as styled badges
+- Support for both diaper changes and feedings
+- Separate color coding for diaper types (wet, solid, dry) and feeding types
+- Display tags and notes
+- Fully translatable across 6 languages
+
+**Example for Diaper Changes:**
+
+```yaml
+type: custom:babybuddy-overview-card
+entity: sensor.babybuddy_api_changes
+mode: diaper
+title: Recent Diaper Changes
+limit: 15
+show_tags: true
+show_times: true
+relative_times: true
+```
+
+**Example for Feedings:**
+
+```yaml
+type: custom:babybuddy-overview-card
+entity: sensor.babybuddy_api_feedings
+mode: feeding
+title: Recent Feedings
+limit: 10
+show_tags: true
+```
  
 ### 🍼 Week Feedings card
 The Week Feedings card shows a split bar per day for the last N days (default 7), with left vs right counts and a subtitle showing total feedings and optional total minutes. All text is configurable/translateable, with singular/plural forms. Icon is configurable and defaults to mdi:baby-bottle.

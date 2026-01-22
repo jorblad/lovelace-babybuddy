@@ -1,15 +1,15 @@
 class BabyBuddyAddDiaperCard extends HTMLElement {
-  _getLanguage() {
-    if (this._hass && this._hass.language) {
-      const lang = this._hass.language.split('-')[0];
+  _getLanguage(hass = this._hass) {
+    if (hass?.language) {
+      const lang = hass.language.split('-')[0];
       const translations = window.BabyBuddyTranslations || BabyBuddyTranslations;
       return translations[lang] ? lang : 'en';
     }
     return 'en';
   }
 
-  _t(path) {
-    const lang = this._getLanguage();
+  _t(path, hass = this._hass) {
+    const lang = this._getLanguage(hass);
     const translations = window.BabyBuddyTranslations || BabyBuddyTranslations;
     const langs = translations[lang];
     const keys = path.split('.');
@@ -367,18 +367,12 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
   }
 
   static getConfigForm() {
-    // Create a helper instance to access translations
-    const t = (path) => {
-      const lang = (typeof BabyBuddyTranslations !== 'undefined') ? 'en' : 'en';
-      const translations = (typeof BabyBuddyTranslations !== 'undefined') ? BabyBuddyTranslations[lang] : {};
-      const keys = path.split('.');
-      let value = translations;
-      for (const key of keys) {
-        value = value?.[key];
-        if (!value) break;
-      }
-      return value || path;
-    };
+    const hass =
+      document.querySelector("home-assistant")?.hass;
+
+    // Create a temporary instance just for translations
+    const t = (path) =>
+      BabyBuddyAddDiaperCard.prototype._t(path, hass);
 
     return {
       schema: [
@@ -394,7 +388,7 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
           default: '' 
         },
         
-        { type: 'section', label: t('diaper.sections.defaults') },
+        { type: 'section' },
         { 
           name: 'default_type', 
           selector: { 
@@ -425,28 +419,19 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
           default: 'Black' 
         },
 
-        { type: 'section', label: t('diaper.sections.optional_fields') },
+        { type: 'section' },
         { name: 'show_amount', selector: { boolean: {} }, default: false },
         { name: 'default_amount', selector: { number: { min: 1, max: 10, step: 1 } }, default: 1 },
         { name: 'show_notes', selector: { boolean: {} }, default: false },
 
-        { type: 'section', label: t('diaper.sections.tags') },
+        { type: 'section' },
         { name: 'tags', selector: { text: { multiple: true } }, default: [] }
       ],
-      computeLabel: (schema) => {
-        const lang = (typeof BabyBuddyTranslations !== 'undefined') ? 'en' : 'en';
-        const translations = (typeof BabyBuddyTranslations !== 'undefined') ? BabyBuddyTranslations[lang] : {};
-        const labels = translations.diaper?.config || {};
-        return labels[schema.name] || schema.label || '';
-      },
-      computeHelper: (schema) => {
-        const lang = (typeof BabyBuddyTranslations !== 'undefined') ? 'en' : 'en';
-        const translations = (typeof BabyBuddyTranslations !== 'undefined') ? BabyBuddyTranslations[lang] : {};
-        const helpers = {
-          tags: translations.diaper?.config?.tags_helper || 'Enter tag names (one per line) that will appear as toggles in the popup'
-        };
-        return helpers[schema.name];
-      }
+      computeLabel: (schema) =>
+        t(`diaper.config.${schema.name}`),
+
+      computeHelper: (schema) =>
+        t(`diaper.config_helper.${schema.name}`)
     };
   }
 }
