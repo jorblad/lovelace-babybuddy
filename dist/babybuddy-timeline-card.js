@@ -414,9 +414,11 @@ class BabyBuddyTimelineCard extends HTMLElement {
 
             if (item.wet) {
               wetPoints.push([x, 2]);
-            } else if (item.solid) {
+            } 
+            if (item.solid) {
               solidPoints.push([x, 3]);
-            } else {
+            } 
+            if (!item.wet && !item.solid) {
               dryPoints.push([x, 4]);
             }
           }
@@ -537,6 +539,51 @@ class BabyBuddyTimelineCard extends HTMLElement {
   }
 
   getCardSize() { return 4; }
+
+  _getPreviewData() {
+    // Generate realistic preview data
+    const now = new Date();
+    const createTime = (minutesAgo) => {
+      const d = new Date(now.getTime() - minutesAgo * 60000);
+      return d.toISOString();
+    };
+
+      return [
+        {
+          id: 1,
+          child: 1,
+          time: createTime(5),
+          wet: true,
+          solid: false,
+          color: '',
+          amount: null,
+          notes: '',
+          tags: ['Bomull', 'Formsydd']
+        },
+        {
+          id: 2,
+          child: 1,
+          time: createTime(45),
+          wet: true,
+          solid: true,
+          color: '',
+          amount: null,
+          notes: 'Test note',
+          tags: ['Engångsblöja']
+        },
+        {
+          id: 3,
+          child: 1,
+          time: createTime(150),
+          wet: true,
+          solid: false,
+          color: '',
+          amount: null,
+          notes: '',
+          tags: ['Automatisk registrering']
+        }
+      ];
+  }
 
   static getConfigForm() {
     return {
