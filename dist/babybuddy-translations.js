@@ -165,6 +165,45 @@ const BabyBuddyTranslations = {
         defaults: 'Defaults',
         notes_tags: 'Notes & Tags'
       }
+    },
+    growth: {
+      card: {
+        title: 'Add Measurement',
+        button_text: 'Log Measurement'
+      },
+      form: {
+        type: 'Measurement Type',
+        date: 'Date',
+        value_weight: 'Weight (kg)',
+        value_height: 'Height (cm)',
+        value_head: 'Head circumference (cm)',
+        notes: 'Notes',
+        tags: 'Tags',
+        submit: 'Add Measurement',
+        cancel: 'Cancel'
+      },
+      types: {
+        weight: 'Weight',
+        height: 'Height',
+        head: 'Head circumference'
+      },
+      notifications: {
+        success: 'Measurement logged successfully!',
+        error: 'Error: {error}'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        default_type: 'Default Measurement Type',
+        show_notes: 'Show Notes Field',
+        tags: 'Available Tags',
+        tags_helper: 'Enter tag names (one per line) that will appear as toggles in the popup'
+      },
+      sections: {
+        defaults: 'Defaults',
+        notes_tags: 'Notes & Tags'
+      }
     }
   },
   nl: {
@@ -332,7 +371,47 @@ const BabyBuddyTranslations = {
         defaults: 'Standaarden',
         notes_tags: 'Notities & Tags'
       }
+    },
+    growth: {
+      card: {
+        title: 'Meting toevoegen',
+        button_text: 'Meting registreren'
+      },
+      form: {
+        type: 'Type meting',
+        date: 'Datum',
+        value_weight: 'Gewicht (kg)',
+        value_height: 'Lengte (cm)',
+        value_head: 'Hoofdomtrek (cm)',
+        notes: 'Notities',
+        tags: 'Tags',
+        submit: 'Meting toevoegen',
+        cancel: 'Annuleren'
+      },
+      types: {
+        weight: 'Gewicht',
+        height: 'Lengte',
+        head: 'Hoofdomtrek'
+      },
+      notifications: {
+        success: 'Meting succesvol geregistreerd!',
+        error: 'Fout: {error}'
+      },
+      config: {
+        title: 'Kaarttitel',
+        button_text: 'Knoptekst',
+        device_id: 'Baby-apparaat',
+        default_type: 'Standaard meettype',
+        show_notes: 'Notitieveld weergeven',
+        tags: 'Beschikbare tags',
+        tags_helper: 'Voer tagnamen in (één per regel) die als schakelaars verschijnen'
+      },
+      sections: {
+        defaults: 'Standaarden',
+        notes_tags: 'Notities & Tags'
+      }
     }
+
   },
   de: {
     diaper: {
@@ -494,6 +573,45 @@ const BabyBuddyTranslations = {
         show_notes: 'Notizfeld anzeigen',
         tags: 'Verfügbare Tags',
         tags_helper: 'Geben Sie Tagnamen ein (einer pro Zeile), die als Umschalter im Popup-Formular erscheinen'
+      },
+      sections: {
+        defaults: 'Standard',
+        notes_tags: 'Notizen & Tags'
+      }
+    },
+    growth: {
+      card: {
+        title: 'Messung hinzufügen',
+        button_text: 'Messung protokollieren'
+      },
+      form: {
+        type: 'Messtyp',
+        date: 'Datum',
+        value_weight: 'Gewicht (kg)',
+        value_height: 'Größe (cm)',
+        value_head: 'Kopfumfang (cm)',
+        notes: 'Notizen',
+        tags: 'Tags',
+        submit: 'Messung hinzufügen',
+        cancel: 'Abbrechen'
+      },
+      types: {
+        weight: 'Gewicht',
+        height: 'Größe',
+        head: 'Kopfumfang'
+      },
+      notifications: {
+        success: 'Messung erfolgreich gespeichert!',
+        error: 'Fehler: {error}'
+      },
+      config: {
+        title: 'Kartentitel',
+        button_text: 'Schaltflächentext',
+        device_id: 'Baby-Gerät',
+        default_type: 'Standard-Messtyp',
+        show_notes: 'Notizfeld anzeigen',
+        tags: 'Verfügbare Tags',
+        tags_helper: 'Geben Sie Tagnamen ein (einer pro Zeile), die als Umschalter im Popup angezeigt werden'
       },
       sections: {
         defaults: 'Standard',
@@ -666,7 +784,47 @@ const BabyBuddyTranslations = {
         defaults: 'Valeurs par défaut',
         notes_tags: 'Notes & Tags'
       }
+    },
+    growth: {
+      card: {
+        title: 'Ajouter une mesure',
+        button_text: 'Enregistrer la mesure'
+      },
+      form: {
+        type: 'Type de mesure',
+        date: 'Date',
+        value_weight: 'Poids (kg)',
+        value_height: 'Taille (cm)',
+        value_head: 'Périmètre crânien (cm)',
+        notes: 'Notes',
+        tags: 'Tags',
+        submit: 'Ajouter la mesure',
+        cancel: 'Annuler'
+      },
+      types: {
+        weight: 'Poids',
+        height: 'Taille',
+        head: 'Périmètre crânien'
+      },
+      notifications: {
+        success: 'Mesure enregistrée avec succès !',
+        error: 'Erreur : {error}'
+      },
+      config: {
+        title: 'Titre de la carte',
+        button_text: 'Texte du bouton',
+        device_id: 'Appareil bébé',
+        default_type: 'Type de mesure par défaut',
+        show_notes: 'Afficher le champ des notes',
+        tags: 'Tags disponibles',
+        tags_helper: 'Entrez les noms des tags (un par ligne) affichés comme boutons dans la fenêtre'
+      },
+      sections: {
+        defaults: 'Valeurs par défaut',
+        notes_tags: 'Notes & Tags'
+      }
     }
+
   },
   es: {
     diaper: {
@@ -833,7 +991,47 @@ const BabyBuddyTranslations = {
         defaults: 'Valores predeterminados',
         notes_tags: 'Notas & Etiquetas'
       }
+    },
+    growth: {
+      card: {
+        title: 'Agregar medición',
+        button_text: 'Registrar medición'
+      },
+      form: {
+        type: 'Tipo de medición',
+        date: 'Fecha',
+        value_weight: 'Peso (kg)',
+        value_height: 'Altura (cm)',
+        value_head: 'Circunferencia de la cabeza (cm)',
+        notes: 'Notas',
+        tags: 'Etiquetas',
+        submit: 'Agregar medición',
+        cancel: 'Cancelar'
+      },
+      types: {
+        weight: 'Peso',
+        height: 'Altura',
+        head: 'Circunferencia de la cabeza'
+      },
+      notifications: {
+        success: '¡Medición registrada correctamente!',
+        error: 'Error: {error}'
+      },
+      config: {
+        title: 'Título de la tarjeta',
+        button_text: 'Texto del botón',
+        device_id: 'Dispositivo bebé',
+        default_type: 'Tipo de medición predeterminado',
+        show_notes: 'Mostrar campo de notas',
+        tags: 'Etiquetas disponibles',
+        tags_helper: 'Ingrese nombres de etiquetas (uno por línea) que aparecerán como botones'
+      },
+      sections: {
+        defaults: 'Valores predeterminados',
+        notes_tags: 'Notas & Etiquetas'
+      }
     }
+
   },
   sv: {
     diaper: {
@@ -1038,6 +1236,45 @@ const BabyBuddyTranslations = {
         default_duration: 'Standardvaraktighet i minuter',
         show_notes: 'Visa anteckningsfält',
         tags: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
+      },
+      sections: {
+        defaults: 'Standardvärden',
+        notes_tags: 'Anteckningar & Taggar'
+      }
+    },
+    growth: {
+      card: {
+        title: 'Lägg till mätning',
+        button_text: 'Registrera mätning'
+      },
+      form: {
+        type: 'Typ av mätning',
+        date: 'Datum',
+        value_weight: 'Vikt (kg)',
+        value_height: 'Längd (cm)',
+        value_head: 'Huvudomfång (cm)',
+        notes: 'Anteckningar',
+        tags: 'Taggar',
+        submit: 'Lägg till mätning',
+        cancel: 'Avbryt'
+      },
+      types: {
+        weight: 'Vikt',
+        height: 'Längd',
+        head: 'Huvudomfång'
+      },
+      notifications: {
+        success: 'Mätningen registrerades framgångsrikt!',
+        error: 'Fel: {error}'
+      },
+      config: {
+        title: 'Korttitel',
+        button_text: 'Knapptext',
+        device_id: 'Baby-enhet',
+        default_type: 'Standardtyp av mätning',
+        show_notes: 'Visa anteckningsfält',
+        tags: 'Tillgängliga taggar',
+        tags_helper: 'Ange taggnamn (ett per rad) som visas som växlar i popup-formuläret'
       },
       sections: {
         defaults: 'Standardvärden',
