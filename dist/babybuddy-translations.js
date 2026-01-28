@@ -1194,13 +1194,21 @@ const BabyBuddyTranslations = {
     overview: {
       card: {
         title_diaper: 'Senaste blöjbyten',
-        title_feeding: 'Senaste matningarna'
+        title_feeding: 'Senaste matningarna',
+        title_sleep: 'Senaste sömnerna'
       },
       just_now: 'Nu',
       ago: 'sedan',
       no_data: 'Ingen data tillgänglig',
       mode_diaper: 'Blöjbyten',
       mode_feeding: 'Matningar',
+      mode_sleep: 'Sömn',
+      event: {
+        diaper: 'Blöjbyte',
+        feeding: 'Matning',
+        sleep: 'Sömn',
+        nap: 'Sovstund'
+      },
       config: {
         title: 'Korttitel',
         entity: 'Entitet',
@@ -1241,6 +1249,10 @@ const BabyBuddyTranslations = {
         tags: 'Taggar',
         submit: 'Lägg till sömn',
         cancel: 'Avbryt'
+      },
+      types: {
+        sleep: 'Sömn',
+        nap: 'Tupplur'
       },
       nap: {
         no: "Nej",
