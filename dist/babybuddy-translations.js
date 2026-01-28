@@ -1204,6 +1204,8 @@ const BabyBuddyTranslations = {
       mode_diaper: 'Blöjbyten',
       mode_feeding: 'Matningar',
       mode_sleep: 'Sömn',
+      read_more: 'Läs mer',
+      read_less: 'Läs mindre',
       event: {
         diaper: 'Blöjbyte',
         feeding: 'Matning',
