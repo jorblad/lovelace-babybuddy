@@ -9,3 +9,11 @@ services:
       - "8123:8123"
     restart: unless-stopped
     environment: []
+  babybuddy:
+    image: lscr.io/linuxserver/babybuddy
+    container_name: babybuddy
+    volumes:
+      - ./babybuddy-config:/config
+    ports:
+      - 8100:8000
+    restart: unless-stopped
