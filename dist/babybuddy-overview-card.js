@@ -226,7 +226,25 @@ class BabyBuddyOverviewCard extends HTMLElement {
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        .empty { padding: 32px 16px; text-align: center; color: var(--secondary-text-color); }
+        .note-text.truncated {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .read-more-btn {
+          font-size: 0.8em;
+          color: var(--primary-color);
+          cursor: pointer;
+          font-weight: bold;
+          margin-top: 2px;
+          text-transform: uppercase;
+        }
+        .empty {
+          padding: 32px 16px;
+          text-align: center;
+          color: var(--secondary-text-color);
+        }
         /* Summary Mode Specifics */
         .summary-item {
           flex-direction: column !important;
@@ -314,6 +332,16 @@ class BabyBuddyOverviewCard extends HTMLElement {
     `;
     this._eventList = this.shadowRoot.getElementById('eventList');
     this._headerText = this.shadowRoot.getElementById('headerText');
+
+    // Add this Listener for Read More functionality
+    this._eventList.addEventListener('click', (e) => {
+      if (e.target.classList.contains('read-more-btn')) {
+        const noteDiv = e.target.previousElementSibling;
+        const isTruncated = noteDiv.classList.toggle('truncated');
+        e.target.innerText = isTruncated ? this._t('overview.read_more') : this._t('overview.read_less');
+      }
+    });
+
     this._initialized = true;
   }
 
@@ -439,7 +467,16 @@ class BabyBuddyOverviewCard extends HTMLElement {
       const tagsHtml = (this.config.show_tags && event.tags?.length) ? 
         `<div class="tags">${event.tags.map(tag => `<span class="tag" style="background-color: ${this._getTagColor(tag)}">${this._escapeHtml(tag)}</span>`).join('')}</div>` : '';
       
-      const notesHtml = event.notes ? `<div class="notes">${this._escapeHtml(event.notes)}</div>` : '';
+      let notesHtml = '';
+      if (event.notes) {
+        const isLong = event.notes.length > 85;
+        const escapedNote = this._escapeHtml(event.notes);
+        notesHtml = `
+          <div class="notes">
+            <div class="note-text ${isLong ? 'truncated' : ''}">${escapedNote}</div>
+            ${isLong ? `<span class="read-more-btn">${this._t('overview.read_more')}</span>` : ''}
+          </div>`;
+      }
 
       const baseUrl = this.config.babybuddy_base_url || '';
       const pathMap = { diaper: 'changes', feeding: 'feedings', sleep: 'sleep' };
@@ -469,8 +506,6 @@ class BabyBuddyOverviewCard extends HTMLElement {
     const dailyTotals = {};
     const sleepTarget = this.config.sleep_target || 14;
     const targetMs = sleepTarget * 3600000;
-    
-    // Get the user's language/locale from Hass (default to 'en-US' if not found)
     const userLocale = this._hass.locale?.language || this._hass.language || 'en-US';
 
     results.forEach(event => {
@@ -481,12 +516,9 @@ class BabyBuddyOverviewCard extends HTMLElement {
         const overallEnd = new Date(event.end);
 
         while (currentStart < overallEnd) {
-            // Using Intl.DateTimeFormat with Hass locale to get YYYY-MM-DD reliably
             const dateKey = new Intl.DateTimeFormat('en-CA', { 
                 year: 'numeric', month: '2-digit', day: '2-digit' 
             }).format(currentStart); 
-            // Note: 'en-CA' is used above as a trick to get YYYY-MM-DD regardless of locale 
-            // to keep the keys consistent for sorting, but we display it nicely later.
 
             const endOfDay = new Date(currentStart);
             endOfDay.setHours(23, 59, 59, 999);
@@ -498,9 +530,8 @@ class BabyBuddyOverviewCard extends HTMLElement {
                 if (!dailyTotals[dateKey]) dailyTotals[dateKey] = { ms: 0, count: 0 };
                 dailyTotals[dateKey].ms += durationMs;
                 
-                if (currentStart.getTime() === new Date(startTime).getTime()) {
-                    dailyTotals[dateKey].count += 1;
-                }
+                // FIXED: Increment count for every day this sleep session exists
+                dailyTotals[dateKey].count += 1;
             }
 
             if (overallEnd > endOfDay) {
@@ -522,21 +553,13 @@ class BabyBuddyOverviewCard extends HTMLElement {
         const m = totalMinutes % 60;
         const percentage = Math.min((data.ms / targetMs) * 100, 100);
 
-        // Trend Logic: Compare to the previous day (next item in sorted array)
         let trendHtml = '';
         const yesterdayDate = sortedDates[index + 1];
         if (yesterdayDate) {
             const yesterdayMs = dailyTotals[yesterdayDate].ms;
             const diffMs = data.ms - yesterdayMs;
-            const diffMins = Math.abs(Math.floor(diffMs / 60000));
-            const diffH = Math.floor(diffMins / 60);
-            const diffM = diffMins % 60;
-            const diffStr = diffH > 0 ? `${diffH}h ${diffM}m` : `${diffM}m`;
-
-            if (diffMs > 300000) { // More than 5 min difference
-                trendHtml = `<span class="trend up" title="${diffStr} more than yesterday">▲</span>`;
-            } else if (diffMs < -300000) {
-                trendHtml = `<span class="trend down" title="${diffStr} less than yesterday">▼</span>`;
+            if (Math.abs(diffMs) > 300000) {
+                trendHtml = `<span class="trend ${diffMs > 0 ? 'up' : 'down'}">${diffMs > 0 ? '▲' : '▼'}</span>`;
             }
         }
 
@@ -545,8 +568,6 @@ class BabyBuddyOverviewCard extends HTMLElement {
         });
 
         const sleepLabel = data.count === 1 ? this._t('sleep.types.sleep') : this._t('overview.config.mode_sleep');
-        const ofGoalLabel = this._t('overview.stats.of_goal');
-        const targetLabel = this._t('overview.config.sleep_target');
 
         return `
             <li class="event-item summary-item">
@@ -561,8 +582,8 @@ class BabyBuddyOverviewCard extends HTMLElement {
                     <div class="progress-bar" style="width: ${percentage}%"></div>
                 </div>
                 <div class="progress-stats">
-                    <span>${Math.round((data.ms / targetMs) * 100)}% ${ofGoalLabel}</span>
-                    <span>${targetLabel}: ${sleepTarget}h</span>
+                    <span>${Math.round((data.ms / targetMs) * 100)}% ${this._t('overview.stats.of_goal')}</span>
+                    <span>${this._t('overview.config.sleep_target')}: ${sleepTarget}h</span>
                 </div>
             </li>
         `;
