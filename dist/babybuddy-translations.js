@@ -1195,7 +1195,8 @@ const BabyBuddyTranslations = {
       card: {
         title_diaper: 'Senaste blöjbyten',
         title_feeding: 'Senaste matningarna',
-        title_sleep: 'Senaste sömnerna'
+        title_sleep: 'Senaste sömnerna',
+        title_sleep_daily: 'Sömn per dag'
       },
       just_now: 'Nu',
       ago: 'sedan',
@@ -1209,11 +1210,23 @@ const BabyBuddyTranslations = {
         sleep: 'Sömn',
         nap: 'Sovstund'
       },
+      stats: {
+        of_goal: 'av målet',
+      },
+      sleep: {
+        types: {
+          sleep: 'sömntid',
+          nap: 'Sovstund'
+        }
+      },
       config: {
         title: 'Korttitel',
         entity: 'Entitet',
         mode: 'Läge',
         limit: 'Gräns',
+        mode_sleep: 'sovtider',
+        sleep_target: 'Sömnmål (timmar)',
+        days_to_show: 'Antal dagar att visa',
         show_tags: 'Visa taggar',
         show_times: 'Visa tider',
         show_delete: 'Visa radera-knapp',
@@ -1226,6 +1239,8 @@ const BabyBuddyTranslations = {
         entity: 'Sensor-entitet med results-array',
         mode: 'Visa blöjbyten eller matningar',
         limit: 'Maximalt antal händelser att visa',
+        sleep_target: 'Mål för sömn per dag i timmar (endast för sömnöversikt)',
+        days_to_show: 'Endast för sömn per dag-läge',
         show_tags: 'Visa taggar för varje händelse',
         show_times: 'Visa tidsstämplar',
         relative_times: 'Visa relativa tider istället för absoluta',
