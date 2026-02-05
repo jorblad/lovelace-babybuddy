@@ -53,7 +53,9 @@ class BabyBuddyAddGrowthCard extends HTMLElement {
         :host { display: block; }
         ha-card { padding: 0; }
         .card-content { padding: 16px; display: flex; justify-content: center; }
-        ha-button { width: 100%; min-width: 100px; }
+        ha-button { width: 100%; min-width: 100px; position: relative; }
+        ha-button.loading { pointer-events: none; color: transparent; }
+        ha-button.loading::after { content: ''; position: absolute; left: 50%; right: auto; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border: 2px solid var(--primary-text-color); border-top-color: transparent; border-radius: 50%; }
         ha-dialog { --mdc-dialog-max-width: 500px; }
         .dialog-content { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
         .form-group { display: flex; flex-direction: column; gap: 8px; }
@@ -79,11 +81,12 @@ class BabyBuddyAddGrowthCard extends HTMLElement {
           background: var(--card-background-color);
           color: var(--primary-text-color);
         }
+        ha-button.pressed { transform: translateY(1px); opacity: 0.9; }
       </style>
 
-      <ha-card>
+        <ha-card>
         <div class="card-content">
-          <ha-button raised id="openBtn">${buttonText}</ha-button>
+          <ha-button id="openBtn">${buttonText}</ha-button>
         </div>
       </ha-card>
 
@@ -145,7 +148,15 @@ class BabyBuddyAddGrowthCard extends HTMLElement {
 
     this._typeSelect.addEventListener('selected', () => this._updateValueLabel());
     this._openBtn.addEventListener('click', () => {
+      this._openBtn.classList.add('pressed');
+      setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       this._dateInput.value = new Date().toISOString().split('T')[0];
+      // reset submit button state when dialog opens
+      if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading', 'success');
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('growth.form.submit');
+      }
       this._dialog.show();
     });
     this._submitBtn.addEventListener('click', () => this._handleSubmit());
@@ -170,6 +181,18 @@ class BabyBuddyAddGrowthCard extends HTMLElement {
   }
 
   async _handleSubmit() {
+    // prevent double submissions
+    if (this._submitBtn && this._submitBtn.disabled) return;
+
+    // show immediate feedback and lock submit
+    if (this._submitBtn) {
+      this._submitBtn.disabled = true;
+      this._originalSubmitText = this._submitBtn.textContent;
+      this._submitBtn.textContent = this._t('growth.form.submitting') || 'Submitting...';
+      this._submitBtn.classList.add('loading');
+      this._submitBtn.classList.remove('success');
+    }
+
     const type = this._typeSelect.value;
     const value = Number(this._valueInput.value);
     const date = this._dateInput.value;
@@ -196,9 +219,19 @@ class BabyBuddyAddGrowthCard extends HTMLElement {
     try {
       const target = this.config.device_id ? { device_id: this.config.device_id } : {};
       await this._hass.callService('babybuddy', svc.service, data, target);
-      this._dialog.close();
+      if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
+        this._submitBtn.classList.add('success');
+      }
       this._showNotification(this._t('growth.notifications.success'), 'success');
+      await new Promise(r => setTimeout(r, 350));
+      this._dialog.close();
     } catch (err) {
+      if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('growth.form.submit');
+      }
       this._showNotification(this._tReplace('growth.notifications.error', { error: err.message }), 'error');
     }
   }

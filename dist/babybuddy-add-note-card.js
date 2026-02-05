@@ -49,7 +49,9 @@ class BabyBuddyAddNoteCard extends HTMLElement {
         :host { display: block; }
         ha-card { padding: 0; }
         .card-content { padding: 16px; display: flex; justify-content: center; }
-        ha-button { width: 100%; }
+        ha-button { width: 100%; min-width: 100px; position: relative; }
+        ha-button.loading { pointer-events: none; color: transparent; }
+        ha-button.loading::after { content: ''; position: absolute; left: 50%; right: auto; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border: 2px solid var(--primary-text-color); border-top-color: transparent; border-radius: 50%; }
         ha-dialog { --mdc-dialog-max-width: 500px; }
         .dialog-content { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
         .form-group { display: flex; flex-direction: column; gap: 8px; }
@@ -75,11 +77,12 @@ class BabyBuddyAddNoteCard extends HTMLElement {
           color: var(--text-primary-color);
           border-color: var(--primary-color);
         }
+        ha-button.pressed { transform: translateY(1px); opacity: 0.9; }
       </style>
 
       <ha-card>
         <div class="card-content">
-          <ha-button raised id="openBtn">${buttonText}</ha-button>
+          <ha-button id="openBtn">${buttonText}</ha-button>
         </div>
       </ha-card>
 
@@ -134,10 +137,19 @@ class BabyBuddyAddNoteCard extends HTMLElement {
     }
 
     this._openBtn.onclick = () => {
+      // small visual feedback for the open button
+      this._openBtn.classList.add('pressed');
+      setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       if (this._timeInput) {
         const now = new Date();
         this._timeInput.value =
           `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      }
+      // ensure submit button is enabled when dialog is opened
+      if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading', 'success');
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('note.form.submit');
       }
       this._dialog.show();
     };
@@ -147,6 +159,17 @@ class BabyBuddyAddNoteCard extends HTMLElement {
   }
 
   async _handleSubmit() {
+    // prevent double submissions
+    if (this._submitBtn && this._submitBtn.disabled) return;
+
+    if (this._submitBtn) {
+      this._submitBtn.disabled = true;
+      this._originalSubmitText = this._submitBtn.textContent;
+      this._submitBtn.textContent = this._t('note.form.submitting') || 'Submitting...';
+      this._submitBtn.classList.add('loading');
+      this._submitBtn.classList.remove('success');
+    }
+
     try {
       const tags = [...(this._tagsContainer?.querySelectorAll('.selected') || [])]
         .map(b => b.value);
@@ -161,9 +184,19 @@ class BabyBuddyAddNoteCard extends HTMLElement {
       if (this.config.device_id) target.device_id = this.config.device_id;
 
       await this._hass.callService('babybuddy', 'add_note', data, target);
-      this._dialog.close();
+      if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
+        this._submitBtn.classList.add('success');
+      }
       this._showNotification(this._t('note.notifications.success'), 'success');
+      await new Promise(r => setTimeout(r, 350));
+      this._dialog.close();
     } catch (err) {
+      if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('note.form.submit');
+      }
       this._showNotification(
         this._tReplace('note.notifications.error', { error: err.message }),
         'error'
