@@ -143,13 +143,11 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
         }
         ha-button {
           min-width: 100px;
+          position: relative;
         }
-        #submitBtn {
-          --mdc-button-raised-box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2);
-        }
-        #cancelBtn {
-          --mdc-theme-primary: var(--primary-text-color);
-        }
+        ha-button.loading { pointer-events: none; color: transparent; }
+        ha-button.loading::after { content: ''; position: absolute; left: 50%; right: auto; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border: 2px solid var(--primary-text-color); border-top-color: transparent; border-radius: 50%; }
+        
         ha-button.pressed {
           transform: translateY(1px);
           opacity: 0.9;
@@ -158,7 +156,7 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
 
       <ha-card>
         <div class="card-content">
-          <ha-button raised id="openBtn">${buttonText}</ha-button>
+          <ha-button id="openBtn">${buttonText}</ha-button>
         </div>
       </ha-card>
 
@@ -258,12 +256,12 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
 
     // Event listeners
     this._openBtn.addEventListener('click', () => {
-      // small visual feedback for the open button
       this._openBtn.classList.add('pressed');
       setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       this._setCurrentTime();
-      // ensure submit button is enabled when dialog is opened
+      // reset submit button state when dialog opens
       if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading', 'success');
         this._submitBtn.disabled = false;
         this._submitBtn.textContent = this._originalSubmitText || this._t('diaper.form.submit');
       }
@@ -292,6 +290,8 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
       this._submitBtn.disabled = true;
       this._originalSubmitText = this._submitBtn.textContent;
       this._submitBtn.textContent = this._t('diaper.form.submitting') || 'Submitting...';
+      this._submitBtn.classList.add('loading');
+      this._submitBtn.classList.remove('success');
     }
 
     const time = this._timeInput.value;
@@ -350,13 +350,20 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
         }
       }
       await this._hass.callService('babybuddy', 'add_diaper_change', actionData, target);
-      this._dialog.close();
-      
+      // Show success state on button
+      if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
+        this._submitBtn.classList.add('success');
+      }
       // Show success notification
       this._showNotification(this._t('diaper.notifications.success'), 'success');
+      // brief pause so user sees success state
+      await new Promise(r => setTimeout(r, 350));
+      this._dialog.close();
     } catch (error) {
       // re-enable submit button on error so user can retry
       if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
         this._submitBtn.disabled = false;
         this._submitBtn.textContent = this._originalSubmitText || this._t('diaper.form.submit');
       }

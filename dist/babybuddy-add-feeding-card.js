@@ -72,6 +72,8 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
         }
         ha-button {
           width: 100%;
+          min-width: 100px;
+          position: relative;
         }
         ha-dialog {
           --mdc-dialog-max-width: 500px;
@@ -82,6 +84,9 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
           flex-direction: column;
           gap: 16px;
         }
+        ha-button.loading { pointer-events: none; color: transparent; }
+        ha-button.loading::after { content: ''; position: absolute; left: 50%; right: auto; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border: 2px solid var(--primary-text-color); border-top-color: transparent; border-radius: 50%; }
+        
         .form-group {
           display: flex;
           flex-direction: column;
@@ -138,9 +143,6 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
           background-color: var(--primary-color);
           color: var(--text-primary-color);
           border-color: var(--primary-color);
-        }
-        ha-button {
-          min-width: 100px;
         }
         ha-button.pressed {
           transform: translateY(1px);
@@ -257,8 +259,9 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
       this._openBtn.classList.add('pressed');
       setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       this._setCurrentTimes();
-      // ensure submit button is enabled when dialog is opened
+      // reset submit button state when dialog opens
       if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading', 'success');
         this._submitBtn.disabled = false;
         this._submitBtn.textContent = this._originalSubmitText || this._t('feeding.form.submit');
       }
@@ -295,6 +298,8 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
       this._submitBtn.disabled = true;
       this._originalSubmitText = this._submitBtn.textContent;
       this._submitBtn.textContent = this._t('feeding.form.submitting') || 'Submitting...';
+      this._submitBtn.classList.add('loading');
+      this._submitBtn.classList.remove('success');
     }
 
     const startTime = this._startTimeInput.value;
@@ -352,13 +357,17 @@ class BabyBuddyAddFeedingCard extends HTMLElement {
         }
       }
       await this._hass.callService('babybuddy', 'add_feeding', actionData, target);
-      this._dialog.close();
-      
-      // Show success notification
+      if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
+        this._submitBtn.classList.add('success');
+      }
       this._showNotification(this._t('feeding.notifications.success'), 'success');
+      await new Promise(r => setTimeout(r, 350));
+      this._dialog.close();
     } catch (error) {
       // re-enable submit button on error so user can retry
       if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
         this._submitBtn.disabled = false;
         this._submitBtn.textContent = this._originalSubmitText || this._t('feeding.form.submit');
       }

@@ -449,6 +449,38 @@ const BabyBuddyTranslations = {
         defaults: 'Standaarden',
         notes_tags: 'Notities & Tags'
       }
+    },
+    note: {
+      card: {
+        title: 'Add Note',
+        button_text: 'Add Note'
+      },
+      form: {
+        time: 'Time',
+        note: 'Note',
+        note_placeholder: 'Write your note…',
+        tags: 'Tags',
+        submit: 'Add Note',
+        submitting: 'Submitting...',
+        cancel: 'Cancel'
+      },
+      notifications: {
+        success: 'Note added successfully!',
+        error: 'Error: {error}'
+      },
+      sections: {
+        options: 'Options'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        show_time: 'Show Time Picker',
+        tags: 'Available Tags'
+      },
+      config_helper: {
+        tags: 'These tags will be selectable when adding a note'
+      }
     }
 
   },
@@ -659,6 +691,38 @@ const BabyBuddyTranslations = {
       sections: {
         defaults: 'Standard',
         notes_tags: 'Notizen & Tags'
+      }
+    },
+    note: {
+      card: {
+        title: 'Add Note',
+        button_text: 'Add Note'
+      },
+      form: {
+        time: 'Time',
+        note: 'Note',
+        note_placeholder: 'Write your note…',
+        tags: 'Tags',
+        submit: 'Add Note',
+        submitting: 'Submitting...',
+        cancel: 'Cancel'
+      },
+      notifications: {
+        success: 'Note added successfully!',
+        error: 'Error: {error}'
+      },
+      sections: {
+        options: 'Options'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        show_time: 'Show Time Picker',
+        tags: 'Available Tags'
+      },
+      config_helper: {
+        tags: 'These tags will be selectable when adding a note'
       }
     }
   },
@@ -872,6 +936,38 @@ const BabyBuddyTranslations = {
         defaults: 'Valeurs par défaut',
         notes_tags: 'Notes & Tags'
       }
+    },
+    note: {
+      card: {
+        title: 'Add Note',
+        button_text: 'Add Note'
+      },
+      form: {
+        time: 'Time',
+        note: 'Note',
+        note_placeholder: 'Write your note…',
+        tags: 'Tags',
+        submit: 'Add Note',
+        submitting: 'Submitting...',
+        cancel: 'Cancel'
+      },
+      notifications: {
+        success: 'Note added successfully!',
+        error: 'Error: {error}'
+      },
+      sections: {
+        options: 'Options'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        show_time: 'Show Time Picker',
+        tags: 'Available Tags'
+      },
+      config_helper: {
+        tags: 'These tags will be selectable when adding a note'
+      }
     }
 
   },
@@ -1082,6 +1178,38 @@ const BabyBuddyTranslations = {
       sections: {
         defaults: 'Valores predeterminados',
         notes_tags: 'Notas & Etiquetas'
+      }
+    },
+    note: {
+      card: {
+        title: 'Add Note',
+        button_text: 'Add Note'
+      },
+      form: {
+        time: 'Time',
+        note: 'Note',
+        note_placeholder: 'Write your note…',
+        tags: 'Tags',
+        submit: 'Add Note',
+        submitting: 'Submitting...',
+        cancel: 'Cancel'
+      },
+      notifications: {
+        success: 'Note added successfully!',
+        error: 'Error: {error}'
+      },
+      sections: {
+        options: 'Options'
+      },
+      config: {
+        title: 'Card Title',
+        button_text: 'Button Text',
+        device_id: 'Baby Device',
+        show_time: 'Show Time Picker',
+        tags: 'Available Tags'
+      },
+      config_helper: {
+        tags: 'These tags will be selectable when adding a note'
       }
     }
 

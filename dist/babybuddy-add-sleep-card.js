@@ -55,7 +55,9 @@ class BabyBuddyAddSleepCard extends HTMLElement {
         :host { display: block; }
         ha-card { padding: 0; }
         .card-content { padding: 16px; display: flex; justify-content: center; }
-        ha-button { width: 100%; min-width: 100px; }
+        ha-button { width: 100%; min-width: 100px; position: relative; }
+        ha-button.loading { pointer-events: none; color: transparent; }
+        ha-button.loading::after { content: ''; position: absolute; left: 50%; right: auto; top: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border: 2px solid var(--primary-text-color); border-top-color: transparent; border-radius: 50%; }
         ha-dialog { --mdc-dialog-max-width: 500px; }
         .dialog-content { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
         .form-group { display: flex; flex-direction: column; gap: 8px; }
@@ -148,8 +150,9 @@ class BabyBuddyAddSleepCard extends HTMLElement {
       this._openBtn.classList.add('pressed');
       setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       this._setCurrentTimes();
-      // ensure submit button is enabled when dialog is opened
+      // reset submit state on open
       if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading', 'success');
         this._submitBtn.disabled = false;
         this._submitBtn.textContent = this._originalSubmitText || this._t('sleep.form.submit');
       }
@@ -186,6 +189,8 @@ class BabyBuddyAddSleepCard extends HTMLElement {
       this._submitBtn.disabled = true;
       this._originalSubmitText = this._submitBtn.textContent;
       this._submitBtn.textContent = this._t('sleep.form.submitting') || 'Submitting...';
+      this._submitBtn.classList.add('loading');
+      this._submitBtn.classList.remove('success');
     }
 
     const startTime = this._startTimeInput.value || '00:00';
@@ -217,10 +222,16 @@ class BabyBuddyAddSleepCard extends HTMLElement {
       }
 
       await this._hass.callService('babybuddy', 'add_sleep', actionData, target);
-      this._dialog.close();
+      if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
+        this._submitBtn.classList.add('success');
+      }
       this._showNotification(this._t('sleep.notifications.success'), 'success');
+      await new Promise(r => setTimeout(r, 350));
+      this._dialog.close();
     } catch (error) {
       if (this._submitBtn) {
+        this._submitBtn.classList.remove('loading');
         this._submitBtn.disabled = false;
         this._submitBtn.textContent = this._originalSubmitText || this._t('sleep.form.submit');
       }
