@@ -67,6 +67,7 @@ class BabyBuddyAddSleepCard extends HTMLElement {
         .tag-toggle { padding: 10px 16px; border: 2px solid var(--divider-color); border-radius: 20px; background-color: transparent; color: var(--primary-text-color); cursor: pointer; user-select: none; font-size: inherit; font-family: inherit; transition: all 0.2s ease; min-height: 44px; display: flex; align-items: center; }
         .tag-toggle:hover { border-color: var(--primary-color); background-color: rgba(var(--rgb-primary-color), 0.1); }
         .tag-toggle.selected { background-color: var(--primary-color); color: var(--text-primary-color); border-color: var(--primary-color); }
+        ha-button.pressed { transform: translateY(1px); opacity: 0.9; }
       </style>
 
       <ha-card>
@@ -144,7 +145,14 @@ class BabyBuddyAddSleepCard extends HTMLElement {
 
     // Event listeners
     this._openBtn.addEventListener('click', () => {
+      this._openBtn.classList.add('pressed');
+      setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       this._setCurrentTimes();
+      // ensure submit button is enabled when dialog is opened
+      if (this._submitBtn) {
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('sleep.form.submit');
+      }
       this._dialog.show();
     });
 
@@ -170,6 +178,16 @@ class BabyBuddyAddSleepCard extends HTMLElement {
   }
 
   async _handleSubmit() {
+    // prevent double submissions
+    if (this._submitBtn && this._submitBtn.disabled) return;
+
+    // show immediate feedback and lock submit
+    if (this._submitBtn) {
+      this._submitBtn.disabled = true;
+      this._originalSubmitText = this._submitBtn.textContent;
+      this._submitBtn.textContent = this._t('sleep.form.submitting') || 'Submitting...';
+    }
+
     const startTime = this._startTimeInput.value || '00:00';
     const endTime = this._endTimeInput.value || '00:00';
     const nap = this._napSelect.value === 'true';
@@ -202,6 +220,10 @@ class BabyBuddyAddSleepCard extends HTMLElement {
       this._dialog.close();
       this._showNotification(this._t('sleep.notifications.success'), 'success');
     } catch (error) {
+      if (this._submitBtn) {
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('sleep.form.submit');
+      }
       this._showNotification(this._tReplace('sleep.notifications.error', { error: error.message }), 'error');
     }
   }

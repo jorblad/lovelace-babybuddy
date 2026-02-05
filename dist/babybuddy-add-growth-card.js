@@ -79,6 +79,7 @@ class BabyBuddyAddGrowthCard extends HTMLElement {
           background: var(--card-background-color);
           color: var(--primary-text-color);
         }
+        ha-button.pressed { transform: translateY(1px); opacity: 0.9; }
       </style>
 
       <ha-card>
@@ -145,7 +146,14 @@ class BabyBuddyAddGrowthCard extends HTMLElement {
 
     this._typeSelect.addEventListener('selected', () => this._updateValueLabel());
     this._openBtn.addEventListener('click', () => {
+      this._openBtn.classList.add('pressed');
+      setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       this._dateInput.value = new Date().toISOString().split('T')[0];
+      // ensure submit button is enabled when dialog is opened
+      if (this._submitBtn) {
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('growth.form.submit');
+      }
       this._dialog.show();
     });
     this._submitBtn.addEventListener('click', () => this._handleSubmit());
@@ -170,6 +178,16 @@ class BabyBuddyAddGrowthCard extends HTMLElement {
   }
 
   async _handleSubmit() {
+    // prevent double submissions
+    if (this._submitBtn && this._submitBtn.disabled) return;
+
+    // show immediate feedback and lock submit
+    if (this._submitBtn) {
+      this._submitBtn.disabled = true;
+      this._originalSubmitText = this._submitBtn.textContent;
+      this._submitBtn.textContent = this._t('growth.form.submitting') || 'Submitting...';
+    }
+
     const type = this._typeSelect.value;
     const value = Number(this._valueInput.value);
     const date = this._dateInput.value;
@@ -199,6 +217,10 @@ class BabyBuddyAddGrowthCard extends HTMLElement {
       this._dialog.close();
       this._showNotification(this._t('growth.notifications.success'), 'success');
     } catch (err) {
+      if (this._submitBtn) {
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('growth.form.submit');
+      }
       this._showNotification(this._tReplace('growth.notifications.error', { error: err.message }), 'error');
     }
   }

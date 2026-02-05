@@ -75,6 +75,7 @@ class BabyBuddyAddNoteCard extends HTMLElement {
           color: var(--text-primary-color);
           border-color: var(--primary-color);
         }
+        ha-button.pressed { transform: translateY(1px); opacity: 0.9; }
       </style>
 
       <ha-card>
@@ -134,10 +135,18 @@ class BabyBuddyAddNoteCard extends HTMLElement {
     }
 
     this._openBtn.onclick = () => {
+      // small visual feedback for the open button
+      this._openBtn.classList.add('pressed');
+      setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       if (this._timeInput) {
         const now = new Date();
         this._timeInput.value =
           `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      }
+      // ensure submit button is enabled when dialog is opened
+      if (this._submitBtn) {
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('note.form.submit');
       }
       this._dialog.show();
     };
@@ -147,6 +156,15 @@ class BabyBuddyAddNoteCard extends HTMLElement {
   }
 
   async _handleSubmit() {
+    // prevent double submissions
+    if (this._submitBtn && this._submitBtn.disabled) return;
+
+    if (this._submitBtn) {
+      this._submitBtn.disabled = true;
+      this._originalSubmitText = this._submitBtn.textContent;
+      this._submitBtn.textContent = this._t('note.form.submitting') || 'Submitting...';
+    }
+
     try {
       const tags = [...(this._tagsContainer?.querySelectorAll('.selected') || [])]
         .map(b => b.value);
@@ -164,6 +182,10 @@ class BabyBuddyAddNoteCard extends HTMLElement {
       this._dialog.close();
       this._showNotification(this._t('note.notifications.success'), 'success');
     } catch (err) {
+      if (this._submitBtn) {
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('note.form.submit');
+      }
       this._showNotification(
         this._tReplace('note.notifications.error', { error: err.message }),
         'error'

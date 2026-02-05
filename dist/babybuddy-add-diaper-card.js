@@ -150,6 +150,10 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
         #cancelBtn {
           --mdc-theme-primary: var(--primary-text-color);
         }
+        ha-button.pressed {
+          transform: translateY(1px);
+          opacity: 0.9;
+        }
       </style>
 
       <ha-card>
@@ -254,7 +258,15 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
 
     // Event listeners
     this._openBtn.addEventListener('click', () => {
+      // small visual feedback for the open button
+      this._openBtn.classList.add('pressed');
+      setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       this._setCurrentTime();
+      // ensure submit button is enabled when dialog is opened
+      if (this._submitBtn) {
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('diaper.form.submit');
+      }
       this._dialog.show();
     });
 
@@ -272,6 +284,16 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
   }
 
   async _handleSubmit() {
+    // prevent double submissions
+    if (this._submitBtn && this._submitBtn.disabled) return;
+
+    // show immediate feedback and lock the submit button
+    if (this._submitBtn) {
+      this._submitBtn.disabled = true;
+      this._originalSubmitText = this._submitBtn.textContent;
+      this._submitBtn.textContent = this._t('diaper.form.submitting') || 'Submitting...';
+    }
+
     const time = this._timeInput.value;
     const type = this._typeSelect.value;
     const color = this._colorSelect ? this._colorSelect.value : null;
@@ -333,6 +355,11 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
       // Show success notification
       this._showNotification(this._t('diaper.notifications.success'), 'success');
     } catch (error) {
+      // re-enable submit button on error so user can retry
+      if (this._submitBtn) {
+        this._submitBtn.disabled = false;
+        this._submitBtn.textContent = this._originalSubmitText || this._t('diaper.form.submit');
+      }
       this._showNotification(this._tReplace('diaper.notifications.error', { error: error.message }), 'error');
     }
   }

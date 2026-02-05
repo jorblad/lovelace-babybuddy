@@ -14,6 +14,7 @@ const BabyBuddyTranslations = {
         notes: 'Notes',
         tags: 'Tags',
         submit: 'Add Change',
+        submitting: 'Submitting...',
         cancel: 'Cancel'
       },
       types: {
@@ -64,6 +65,7 @@ const BabyBuddyTranslations = {
         notes: 'Notes',
         tags: 'Tags',
         submit: 'Add Feeding',
+        submitting: 'Submitting...',
         cancel: 'Cancel'
       },
       types: {
@@ -145,6 +147,7 @@ const BabyBuddyTranslations = {
         notes: 'Notes',
         tags: 'Tags',
         submit: 'Add Sleep',
+        submitting: 'Submitting...',
         cancel: 'Cancel'
       },
       notifications: {
@@ -180,6 +183,7 @@ const BabyBuddyTranslations = {
         notes: 'Notes',
         tags: 'Tags',
         submit: 'Add Measurement',
+        submitting: 'Submitting...',
         cancel: 'Cancel'
       },
       types: {
@@ -216,6 +220,7 @@ const BabyBuddyTranslations = {
         note_placeholder: 'Write your note…',
         tags: 'Tags',
         submit: 'Add Note',
+        submitting: 'Submitting...',
         cancel: 'Cancel'
       },
       notifications: {
@@ -300,7 +305,8 @@ const BabyBuddyTranslations = {
         amount: 'Hoeveelheid',
         notes: 'Notities',
         tags: 'Tags',
-        submit: 'Voeding toevoegen',
+          submit: 'Voeding toevoegen',
+          submitting: 'Verzenden...',
         cancel: 'Annuleren'
       },
       types: {
@@ -381,7 +387,8 @@ const BabyBuddyTranslations = {
         duration: 'Duur (minuten)',
         notes: 'Notities',
         tags: 'Tags',
-        submit: 'Slaap toevoegen',
+          submit: 'Slaap toevoegen',
+          submitting: 'Verzenden...',
         cancel: 'Annuleren'
       },
       notifications: {
@@ -416,7 +423,8 @@ const BabyBuddyTranslations = {
         value_head: 'Hoofdomtrek (cm)',
         notes: 'Notities',
         tags: 'Tags',
-        submit: 'Meting toevoegen',
+          submit: 'Meting toevoegen',
+          submitting: 'Verzenden...',
         cancel: 'Annuleren'
       },
       types: {
@@ -458,6 +466,7 @@ const BabyBuddyTranslations = {
         notes: 'Notizen',
         tags: 'Tags',
         submit: 'Hinzufügen',
+        submitting: 'Senden...',
         cancel: 'Abbrechen'
       },
       types: {
@@ -508,6 +517,7 @@ const BabyBuddyTranslations = {
         notes: 'Notizen',
         tags: 'Tags',
         submit: 'Fütterung hinzufügen',
+        submitting: 'Senden...',
         cancel: 'Abbrechen'
       },
       types: {
@@ -589,6 +599,7 @@ const BabyBuddyTranslations = {
         notes: 'Notizen',
         tags: 'Tags',
         submit: 'Schlaf hinzufügen',
+        submitting: 'Senden...',
         cancel: 'Abbrechen'
       },
       notifications: {
@@ -624,6 +635,7 @@ const BabyBuddyTranslations = {
         notes: 'Notizen',
         tags: 'Tags',
         submit: 'Messung hinzufügen',
+        submitting: 'Senden...',
         cancel: 'Abbrechen'
       },
       types: {
@@ -655,7 +667,8 @@ const BabyBuddyTranslations = {
       card: {
         title: 'Ajouter un changement de couche',
         button_text: 'Enregistrer la couche'
-      },
+        submit: 'Add Note',
+        submitting: 'Verzenden...',
       form: {
         time: 'Heure',
         type: 'Type',
@@ -664,6 +677,7 @@ const BabyBuddyTranslations = {
         notes: 'Notes',
         tags: 'Tags',
         submit: 'Ajouter',
+        submitting: 'Envoi...',
         cancel: 'Annuler'
       },
       types: {
@@ -714,6 +728,7 @@ const BabyBuddyTranslations = {
         notes: 'Notes',
         tags: 'Tags',
         submit: 'Ajouter alimentation',
+        submitting: 'Envoi...',
         cancel: 'Annuler'
       },
       types: {
@@ -795,6 +810,7 @@ const BabyBuddyTranslations = {
         notes: 'Notes',
         tags: 'Tags',
         submit: 'Ajouter sommeil',
+        submitting: 'Envoi...',
         cancel: 'Annuler'
       },
       notifications: {
@@ -830,6 +846,7 @@ const BabyBuddyTranslations = {
         notes: 'Notes',
         tags: 'Tags',
         submit: 'Ajouter la mesure',
+        submitting: 'Envoi...',
         cancel: 'Annuler'
       },
       types: {
@@ -871,6 +888,7 @@ const BabyBuddyTranslations = {
         notes: 'Notas',
         tags: 'Etiquetas',
         submit: 'Agregar',
+        submitting: 'Enviando...',
         cancel: 'Cancelar'
       },
       types: {
@@ -921,6 +939,7 @@ const BabyBuddyTranslations = {
         notes: 'Notas',
         tags: 'Etiquetas',
         submit: 'Agregar alimentación',
+        submitting: 'Enviando...',
         cancel: 'Cancelar'
       },
       types: {
@@ -1002,6 +1021,7 @@ const BabyBuddyTranslations = {
         notes: 'Notas',
         tags: 'Etiquetas',
         submit: 'Agregar sueño',
+        submitting: 'Enviando...',
         cancel: 'Cancelar'
       },
       notifications: {
@@ -1037,6 +1057,7 @@ const BabyBuddyTranslations = {
         notes: 'Notas',
         tags: 'Etiquetas',
         submit: 'Agregar medición',
+        submitting: 'Enviando...',
         cancel: 'Cancelar'
       },
       types: {
@@ -1078,6 +1099,7 @@ const BabyBuddyTranslations = {
         notes: 'Anteckningar',
         tags: 'Taggar',
         submit: 'Lägg till',
+        submitting: 'Skickar...',
         cancel: 'Avbryt'
       },
       types: {
@@ -1141,6 +1163,7 @@ const BabyBuddyTranslations = {
         notes: 'Anteckningar',
         tags: 'Taggar',
         submit: 'Lägg till matning',
+        submitting: 'Skickar...',
         cancel: 'Avbryt'
       },
       types: {
@@ -1265,6 +1288,7 @@ const BabyBuddyTranslations = {
         notes_placeholder: 'Valfritt fält för anteckningar...',
         tags: 'Taggar',
         submit: 'Lägg till sömn',
+        submitting: 'Skickar...',
         cancel: 'Avbryt'
       },
       types: {
@@ -1316,6 +1340,7 @@ const BabyBuddyTranslations = {
         notes: 'Anteckningar',
         tags: 'Taggar',
         submit: 'Lägg till mätning',
+        submitting: 'Skickar...',
         cancel: 'Avbryt'
       },
       types: {
