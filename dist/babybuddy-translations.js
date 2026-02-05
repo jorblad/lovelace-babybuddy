@@ -666,9 +666,10 @@ const BabyBuddyTranslations = {
     diaper: {
       card: {
         title: 'Ajouter un changement de couche',
-        button_text: 'Enregistrer la couche'
+        button_text: 'Enregistrer la couche',
         submit: 'Add Note',
         submitting: 'Verzenden...',
+      },
       form: {
         time: 'Heure',
         type: 'Type',
