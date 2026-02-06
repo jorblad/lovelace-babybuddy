@@ -1,3 +1,6 @@
 config/*
 babybuddy-config/*
 .DS_Store
+# local test deployment folder
+www/babybuddy-test/
+scripts/deploy_to_k3s.sh

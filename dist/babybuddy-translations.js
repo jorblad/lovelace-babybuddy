@@ -1513,7 +1513,8 @@ const BabyBuddyTranslations = {
         note_placeholder: 'Skriv din anteckning…',
         tags: 'Taggar',
         submit: 'Spara anteckning',
-        cancel: 'Avbryt'
+        cancel: 'Avbryt',
+        submitting: 'Skickar...'
       },
       notifications: {
         success: 'Anteckningen sparades!',
