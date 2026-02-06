@@ -160,7 +160,7 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
         </div>
       </ha-card>
 
-      <ha-dialog id="dialog" heading="${cardTitle}">
+      <ha-dialog id="dialog" heading="${cardTitle}" scrimClickAction="close" escapeKeyAction="close">
         <div class="dialog-content">
           <div class="form-group">
             <label>${this._t('diaper.form.time')}</label>
@@ -255,7 +255,7 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
     }
 
     // Event listeners
-    this._openBtn.addEventListener('click', () => {
+      this._openBtn.addEventListener('click', () => {
       this._openBtn.classList.add('pressed');
       setTimeout(() => this._openBtn.classList.remove('pressed'), 150);
       this._setCurrentTime();
@@ -265,11 +265,13 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
         this._submitBtn.disabled = false;
         this._submitBtn.textContent = this._originalSubmitText || this._t('diaper.form.submit');
       }
+      // close any other open dialogs to avoid stray backdrops
+      document.querySelectorAll('ha-dialog[open]').forEach(d => { try { if (d !== this._dialog) d.close(); } catch (e) {} });
       this._dialog.show();
     });
 
     this._submitBtn.addEventListener('click', () => this._handleSubmit());
-    this._cancelBtn.addEventListener('click', () => this._dialog.close());
+    this._cancelBtn.addEventListener('click', () => this._closeDialog());
 
     this._initialized = true;
   }
@@ -359,7 +361,7 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
       this._showNotification(this._t('diaper.notifications.success'), 'success');
       // brief pause so user sees success state
       await new Promise(r => setTimeout(r, 350));
-      this._dialog.close();
+      this._closeDialog();
     } catch (error) {
       // re-enable submit button on error so user can retry
       if (this._submitBtn) {
@@ -390,6 +392,21 @@ class BabyBuddyAddDiaperCard extends HTMLElement {
       });
       this.dispatchEvent(event);
     }
+  }
+
+  _closeDialog() {
+    try {
+      if (this._dialog && typeof this._dialog.close === 'function') {
+        this._dialog.close();
+        return;
+      }
+    } catch (e) {}
+    try {
+      if (this._dialog) {
+        this._dialog.open = false;
+        if (this._dialog.removeAttribute) this._dialog.removeAttribute('open');
+      }
+    } catch (e) {}
   }
 
   set hass(hass) {

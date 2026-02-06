@@ -86,7 +86,7 @@ class BabyBuddyAddNoteCard extends HTMLElement {
         </div>
       </ha-card>
 
-      <ha-dialog id="dialog" heading="${cardTitle}">
+      <ha-dialog id="dialog" heading="${cardTitle}" scrimClickAction="close" escapeKeyAction="close">
         <div class="dialog-content">
           ${this.config.show_time ? `
           <div class="form-group">
@@ -151,6 +151,8 @@ class BabyBuddyAddNoteCard extends HTMLElement {
         this._submitBtn.disabled = false;
         this._submitBtn.textContent = this._originalSubmitText || this._t('note.form.submit');
       }
+      // close any other open dialogs to avoid stray backdrops
+      document.querySelectorAll('ha-dialog[open]').forEach(d => { try { if (d !== this._dialog) d.close(); } catch (e) {} });
       this._dialog.show();
     };
 
@@ -190,7 +192,7 @@ class BabyBuddyAddNoteCard extends HTMLElement {
       }
       this._showNotification(this._t('note.notifications.success'), 'success');
       await new Promise(r => setTimeout(r, 350));
-      this._dialog.close();
+      this._closeDialog();
     } catch (err) {
       if (this._submitBtn) {
         this._submitBtn.classList.remove('loading');
@@ -206,6 +208,21 @@ class BabyBuddyAddNoteCard extends HTMLElement {
 
   _showNotification(message, type) {
     this._hass?.notification?.create(message, { type, dismissable: true });
+  }
+
+  _closeDialog() {
+    try {
+      if (this._dialog && typeof this._dialog.close === 'function') {
+        this._dialog.close();
+        return;
+      }
+    } catch (e) {}
+    try {
+      if (this._dialog) {
+        this._dialog.open = false;
+        if (this._dialog.removeAttribute) this._dialog.removeAttribute('open');
+      }
+    } catch (e) {}
   }
 
   set hass(hass) { this._hass = hass; }
