@@ -684,7 +684,18 @@ window.customCards.push({
   type: "babybuddy-timeline-card",
   name: "BabyBuddy Timeline Card",
   description: "Displays timeline data using ApexCharts",
-  preview: true
+  preview: true,
+  getEntitySuggestion: (_hass, entityId) => {
+    if (!entityId || !entityId.startsWith('sensor.babybuddy_')) return null;
+    const lowerId = entityId.toLowerCase();
+    if (lowerId.includes('feeding')) {
+      return { config: { type: 'custom:babybuddy-timeline-card', feedings_entity: entityId } };
+    }
+    if (lowerId.includes('diaper')) {
+      return { config: { type: 'custom:babybuddy-timeline-card', diaper_entity: entityId } };
+    }
+    return null;
+  }
 });
 
 BabyBuddyTimelineCard.getStubConfig = () => ({ feedings_entity:'', diaper_entity:'', debug:true });

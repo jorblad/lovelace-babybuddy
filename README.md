@@ -16,6 +16,8 @@ This folder contains aomw small custom Lovelace cards that plot the time-series 
 - `babybuddy-add-feeding-card.js` — popup form card for logging feedings to the babybuddy integration.
 - `babybuddy-overview-card.js` — overview card displaying recent diaper changes or feedings with tags and timestamps.
 
+Cards with entity-based configuration now include Home Assistant picker suggestions for matching `sensor.babybuddy_*` entities.
+
 ---
 
 ## 🧩 Installation (HACS)

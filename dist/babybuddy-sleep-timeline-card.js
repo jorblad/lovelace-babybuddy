@@ -398,5 +398,10 @@ window.customCards.push({
   type: "babybuddy-sleep-timeline-card",
   name: "BabyBuddy Sleep Timeline Card",
   description: "Displays sleep ranges with one row per offset day (category rows, time-of-day in range)",
-  preview: true
+  preview: true,
+  getEntitySuggestion: (_hass, entityId) => {
+    if (!entityId || !entityId.startsWith('sensor.babybuddy_')) return null;
+    if (!entityId.toLowerCase().includes('sleep')) return null;
+    return { config: { type: 'custom:babybuddy-sleep-timeline-card', sleep_entity: entityId } };
+  }
 });
