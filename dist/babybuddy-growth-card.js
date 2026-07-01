@@ -420,6 +420,17 @@ window.customCards.push({
   name: "BabyBuddy Growth Card",
   description: "Displays growth metrics using ApexCharts",
   preview: true,
+  getEntitySuggestion: (_hass, entityId) => {
+    if (!entityId || !entityId.startsWith('sensor.babybuddy_')) return null;
+    const lowerId = entityId.toLowerCase();
+    if (!lowerId.includes('weight') && !lowerId.includes('height') && !lowerId.includes('head')) return null;
+    return {
+      config: {
+        type: 'custom:babybuddy-growth-card',
+        entities: [entityId]
+      }
+    };
+  }
 });
 
 BabyBuddyGrowthCard.getStubConfig = function() { return { entities: [], debug: true }; };

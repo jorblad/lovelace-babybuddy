@@ -321,5 +321,15 @@ window.customCards.push({
   type: "babybuddy-feedings-card",
   name: "BabyBuddy Feedings Card",
   description: "Shows left vs right feedings per day for the last week as split bars",
-  preview: true
+  preview: true,
+  getEntitySuggestion: (_hass, entityId) => {
+    if (!entityId || !entityId.startsWith('sensor.babybuddy_')) return null;
+    if (!entityId.toLowerCase().includes('feeding')) return null;
+    return {
+      config: {
+        type: 'custom:babybuddy-feedings-card',
+        entity: entityId
+      }
+    };
+  }
 });

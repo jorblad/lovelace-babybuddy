@@ -669,7 +669,23 @@ window.customCards.push({
   type: "babybuddy-overview-card",
   name: "BabyBuddy Overview Card",
   description: "Displays an overview of babybuddy data",
-  preview: true
+  preview: true,
+  getEntitySuggestion: (_hass, entityId) => {
+    if (!entityId || !entityId.startsWith('sensor.babybuddy_')) return null;
+    const lowerId = entityId.toLowerCase();
+    let mode = null;
+    if (lowerId.includes('diaper')) mode = 'diaper';
+    if (lowerId.includes('feeding')) mode = 'feeding';
+    if (lowerId.includes('sleep')) mode = 'sleep';
+    if (!mode) return null;
+    return {
+      config: {
+        type: 'custom:babybuddy-overview-card',
+        entity: entityId,
+        mode
+      }
+    };
+  }
 });
 
 BabyBuddyOverviewCard.getStubConfig = () => ({ mode:'diaper', limit:3, entity:'sensor.babybuddy_api_diaper_changes' });
