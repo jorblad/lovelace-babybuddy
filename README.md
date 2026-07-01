@@ -94,6 +94,7 @@ feed_labels:
   left: Left breast
   right: Right breast
   bottle: Bottle
+  solid_food: Solid food
   other: Parent-fed
 ```
 
@@ -104,6 +105,7 @@ feed_colors:
   left: '#1f77b4'
   right: '#ff7f0e'
   bottle: '#2ca02c'
+  solid_food: '#9467bd'
   other: '#7f7f7f'
 ```
 
