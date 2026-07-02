@@ -4,10 +4,28 @@ name: Label-driven Release on merged PR
 on:
   pull_request:
     types: [closed]
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
 
 jobs:
   release:
-    if: ${{ github.event.pull_request.merged == true && (contains(github.event.pull_request.labels.*.name, 'release:major') || contains(github.event.pull_request.labels.*.name, 'major') || contains(github.event.pull_request.labels.*.name, 'release:minor') || contains(github.event.pull_request.labels.*.name, 'minor') || contains(github.event.pull_request.labels.*.name, 'release:patch') || contains(github.event.pull_request.labels.*.name, 'patch')) }}
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.pull_request.merged == true &&
+       (contains(github.event.pull_request.labels.*.name, 'release:major') ||
+        contains(github.event.pull_request.labels.*.name, 'major') ||
+        contains(github.event.pull_request.labels.*.name, 'release:minor') ||
+        contains(github.event.pull_request.labels.*.name, 'minor') ||
+        contains(github.event.pull_request.labels.*.name, 'release:patch') ||
+        contains(github.event.pull_request.labels.*.name, 'patch')))
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,29 +33,23 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Get PR labels
-        id: labels
-        uses: actions/github-script@v9
-        with:
-          result-encoding: string
-          script: |
-            const pr = context.payload.pull_request;
-            const labels = (pr.labels || []).map(l => l.name);
-            core.setOutput('labels', labels.join(','));
-
-      - name: Determine bump from labels
+      - name: Determine bump type
         id: determine
         run: |
-          LABELS="${{ steps.labels.outputs.labels }}"
-          echo "labels='$LABELS'"
-          BUMP=''
-          if echo "$LABELS" | grep -E -w "release:major|major" >/dev/null; then BUMP=major
-          elif echo "$LABELS" | grep -E -w "release:minor|minor" >/dev/null; then BUMP=minor
-          elif echo "$LABELS" | grep -E -w "release:patch|patch" >/dev/null; then BUMP=patch
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            BUMP="${{ inputs.bump }}"
+          else
+            LABELS="${{ join(github.event.pull_request.labels.*.name, ',') }}"
+            echo "labels='$LABELS'"
+            BUMP=''
+            if echo "$LABELS" | grep -E -w "release:major|major" >/dev/null; then BUMP=major
+            elif echo "$LABELS" | grep -E -w "release:minor|minor" >/dev/null; then BUMP=minor
+            elif echo "$LABELS" | grep -E -w "release:patch|patch" >/dev/null; then BUMP=patch
+            fi
           fi
           echo "BUMP=$BUMP" >> $GITHUB_ENV
           echo "bump=$BUMP"
@@ -91,10 +103,10 @@ jobs:
           echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
 
       - name: Create GitHub release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.NEW_TAG }}
-          release_name: ${{ env.NEW_TAG }}
+          name: ${{ env.NEW_TAG }}
           body: ${{ env.RELEASE_BODY }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
