@@ -25,6 +25,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
       color_right:  '#ff7f0e',
       color_bottle: '#2ca02c',
       color_other:  '#7f7f7f',
+      color_feed_solid: '#9467bd',
       color_wet:    '#00bfff',
       color_solid:  '#ff8c00',
       color_dry:    '#9e9e9e'
@@ -46,6 +47,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
       label_right: String(config.label_right || 'Right'),
       label_bottle: String(config.label_bottle || 'Bottle'),
       label_other: String(config.label_other || 'Other'),
+      label_feed_solid: String(config.label_feed_solid || 'Solid food'),
 
       label_wet: String(config.label_wet || 'Wet'),
       label_solid: String(config.label_solid || 'Solid'),
@@ -56,6 +58,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
       color_right:  isValidHex(config.color_right)  ? config.color_right  : defaultHex.color_right,
       color_bottle: isValidHex(config.color_bottle) ? config.color_bottle : defaultHex.color_bottle,
       color_other:  isValidHex(config.color_other)  ? config.color_other  : defaultHex.color_other,
+      color_feed_solid: isValidHex(config.color_feed_solid) ? config.color_feed_solid : defaultHex.color_feed_solid,
       color_wet:    isValidHex(config.color_wet)    ? config.color_wet    : defaultHex.color_wet,
       color_solid:  isValidHex(config.color_solid)  ? config.color_solid  : defaultHex.color_solid,
       color_dry:    isValidHex(config.color_dry)    ? config.color_dry    : defaultHex.color_dry,
@@ -288,7 +291,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
     const diaperState = diaperEnt ? hass.states[diaperEnt] : null;
 
     const methodLabels = Object.assign(
-      { left: this.config.label_left, right: this.config.label_right, bottle: this.config.label_bottle, other: this.config.label_other },
+      { left: this.config.label_left, right: this.config.label_right, bottle: this.config.label_bottle, other: this.config.label_other, solid_food: this.config.label_feed_solid },
       this.config.feed_labels || {}
     );
 
@@ -302,7 +305,8 @@ class BabyBuddyTimelineCard extends HTMLElement {
       left:   resolveHexFromConfigOrDefault('color_left',   this._defaultHex.left),
       right:  resolveHexFromConfigOrDefault('color_right',  this._defaultHex.right),
       bottle: resolveHexFromConfigOrDefault('color_bottle', this._defaultHex.bottle),
-      other:  resolveHexFromConfigOrDefault('color_other',  this._defaultHex.other)
+      other:  resolveHexFromConfigOrDefault('color_other',  this._defaultHex.other),
+      solid_food: resolveHexFromConfigOrDefault('color_feed_solid', this._defaultHex.color_feed_solid)
     };
 
     const feedColorKeyMap = {
@@ -311,7 +315,9 @@ class BabyBuddyTimelineCard extends HTMLElement {
       left: 'left',
       right: 'right',
       bottle: 'bottle',
-      other: 'other'
+      other: 'other',
+      solid: 'solid_food',
+      solid_food: 'solid_food'
     };
     if (this.config.feed_colors && typeof this.config.feed_colors === 'object') {
       for (const [extKey, hex] of Object.entries(this.config.feed_colors)) {
@@ -376,7 +382,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
       }
     }
 
-    const feedGroups = { left: [], right: [], bottle: [], other: [] };
+    const feedGroups = { left: [], right: [], bottle: [], other: [], solid_food: [] };
     if (feedState && feedState.attributes) {
       let res = feedState.attributes.series || feedState.attributes.results;
       if (typeof res === 'string') {
@@ -387,9 +393,11 @@ class BabyBuddyTimelineCard extends HTMLElement {
           const ts = item.start || item.time || item.date;
           const x = ts ? Date.parse(ts) : null;
           if (!x) continue;
-          const methodRaw = (item.method||item.type||'').toString().toLowerCase();
+          const methodRaw = (item.method || '').toString().toLowerCase();
+          const typeRaw = (item.type || item.type_name || item.feeding_type || '').toString().toLowerCase();
           let key='other';
-          if (methodRaw.includes('left')) key='left';
+          if (typeRaw.includes('solid')) key='solid_food';
+          else if (methodRaw.includes('left')) key='left';
           else if (methodRaw.includes('right')) key='right';
           else if (methodRaw.includes('bottle')||methodRaw.includes('formula')||methodRaw.includes('pump')) key='bottle';
           feedGroups[key].push([x,1]);
@@ -427,7 +435,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
     }
 
     let series=[];
-    for (const k of ['left','right','bottle','other']) {
+    for (const k of ['left','right','bottle','other','solid_food']) {
       series.push(...this._mapSeriesWithOffsets(feedGroups[k], offsets, methodLabels[k], compareAsRows, 0, methodColors[k]));
     }
     series.push(...this._mapSeriesWithOffsets(
@@ -596,12 +604,14 @@ class BabyBuddyTimelineCard extends HTMLElement {
         { name: 'label_right', selector: { text: { multiline: false } }, default: 'Right' },
         { name: 'label_bottle', selector: { text: { multiline: false } }, default: 'Bottle' },
         { name: 'label_other', selector: { text: { multiline: false } }, default: 'Other' },
+        { name: 'label_feed_solid', selector: { text: { multiline: false } }, default: 'Solid food' },
 
         { type: 'section', label: 'Feed Colors' },
         { name: 'color_left', selector: { text: { multiline: false } }, default: '#1f77b4' },
         { name: 'color_right', selector: { text: { multiline: false } }, default: '#ff7f0e' },
         { name: 'color_bottle', selector: { text: { multiline: false } }, default: '#2ca02c' },
         { name: 'color_other', selector: { text: { multiline: false } }, default: '#7f7f7f' },
+        { name: 'color_feed_solid', selector: { text: { multiline: false } }, default: '#9467bd' },
 
         { type: 'section', label: 'Diaper Labels' },
         { name: 'label_wet', selector: { text: { multiline: false } }, default: 'Wet' },
@@ -633,10 +643,12 @@ class BabyBuddyTimelineCard extends HTMLElement {
           label_right: 'Right Label',
           label_bottle: 'Bottle Label',
           label_other: 'Other Label',
+          label_feed_solid: 'Solid Food Label',
           color_left: 'Left Color',
           color_right: 'Right Color',
           color_bottle: 'Bottle Color',
           color_other: 'Other Color',
+          color_feed_solid: 'Solid Food Color',
           label_wet: 'Wet Label',
           label_solid: 'Solid Label',
           label_dry: 'Dry Label',
