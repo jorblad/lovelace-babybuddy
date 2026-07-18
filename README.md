@@ -7,7 +7,7 @@ BabyBuddy custom Lovelace cards
 
 ![Overview](https://github.com/jorblad/lovelace-babybuddy/blob/da59f83e9270a1c0c9ef390b0f12364c47a72e85/docs/images/overview.png)
 
-This folder contains aomw small custom Lovelace cards that plot the time-series attributes produced by babybuddy rest-sensors.
+This folder contains some small custom Lovelace cards that plot the time-series attributes produced by babybuddy rest-sensors.
 
 - `babybuddy-growth-card.js` — line charts for growth metrics (weight, height, head circumference).
 - `babybuddy-timeline-card.js` — timeline scatter chart for feedings and diaper events (wet/solid).
