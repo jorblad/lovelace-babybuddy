@@ -23,6 +23,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
     const defaultHex = {
       color_left:   '#1f77b4',
       color_right:  '#ff7f0e',
+      color_both:   '#d62728',
       color_bottle: '#2ca02c',
       color_other:  '#7f7f7f',
       color_feed_solid: '#9467bd',
@@ -45,6 +46,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
 
       label_left: String(config.label_left || 'Left'),
       label_right: String(config.label_right || 'Right'),
+      label_both: String(config.label_both || 'Both breasts'),
       label_bottle: String(config.label_bottle || 'Bottle'),
       label_other: String(config.label_other || 'Other'),
       label_feed_solid: String(config.label_feed_solid || 'Solid food'),
@@ -56,6 +58,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
       // Hex colors - use defaults if not provided or invalid
       color_left:   isValidHex(config.color_left)   ? config.color_left   : defaultHex.color_left,
       color_right:  isValidHex(config.color_right)  ? config.color_right  : defaultHex.color_right,
+      color_both:   isValidHex(config.color_both)   ? config.color_both   : defaultHex.color_both,
       color_bottle: isValidHex(config.color_bottle) ? config.color_bottle : defaultHex.color_bottle,
       color_other:  isValidHex(config.color_other)  ? config.color_other  : defaultHex.color_other,
       color_feed_solid: isValidHex(config.color_feed_solid) ? config.color_feed_solid : defaultHex.color_feed_solid,
@@ -291,7 +294,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
     const diaperState = diaperEnt ? hass.states[diaperEnt] : null;
 
     const methodLabels = Object.assign(
-      { left: this.config.label_left, right: this.config.label_right, bottle: this.config.label_bottle, other: this.config.label_other, solid_food: this.config.label_feed_solid },
+      { left: this.config.label_left, right: this.config.label_right, both: this.config.label_both, bottle: this.config.label_bottle, other: this.config.label_other, solid_food: this.config.label_feed_solid },
       this.config.feed_labels || {}
     );
 
@@ -304,6 +307,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
     let methodColors = {
       left:   resolveHexFromConfigOrDefault('color_left',   this._defaultHex.left),
       right:  resolveHexFromConfigOrDefault('color_right',  this._defaultHex.right),
+      both:   resolveHexFromConfigOrDefault('color_both',   this._defaultHex.both),
       bottle: resolveHexFromConfigOrDefault('color_bottle', this._defaultHex.bottle),
       other:  resolveHexFromConfigOrDefault('color_other',  this._defaultHex.other),
       solid_food: resolveHexFromConfigOrDefault('color_feed_solid', this._defaultHex.color_feed_solid)
@@ -312,8 +316,10 @@ class BabyBuddyTimelineCard extends HTMLElement {
     const feedColorKeyMap = {
       left_breast: 'left',
       right_breast: 'right',
+      both_breasts: 'both',
       left: 'left',
       right: 'right',
+      both: 'both',
       bottle: 'bottle',
       other: 'other',
       solid: 'solid_food',
@@ -382,7 +388,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
       }
     }
 
-    const feedGroups = { left: [], right: [], bottle: [], other: [], solid_food: [] };
+    const feedGroups = { left: [], right: [], both: [], bottle: [], other: [], solid_food: [] };
     if (feedState && feedState.attributes) {
       let res = feedState.attributes.series || feedState.attributes.results;
       if (typeof res === 'string') {
@@ -397,6 +403,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
           const typeRaw = (item.type || item.type_name || item.feeding_type || '').toString().toLowerCase();
           let key='other';
           if (typeRaw.includes('solid')) key='solid_food';
+          else if (methodRaw.includes('both')) key='both';
           else if (methodRaw.includes('left')) key='left';
           else if (methodRaw.includes('right')) key='right';
           else if (methodRaw.includes('bottle')||methodRaw.includes('formula')||methodRaw.includes('pump')) key='bottle';
@@ -435,7 +442,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
     }
 
     let series=[];
-    for (const k of ['left','right','bottle','other','solid_food']) {
+    for (const k of ['left','right','both','bottle','other','solid_food']) {
       series.push(...this._mapSeriesWithOffsets(feedGroups[k], offsets, methodLabels[k], compareAsRows, 0, methodColors[k]));
     }
     series.push(...this._mapSeriesWithOffsets(
@@ -602,6 +609,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
         { type: 'section', label: 'Feed Labels' },
         { name: 'label_left', selector: { text: { multiline: false } }, default: 'Left' },
         { name: 'label_right', selector: { text: { multiline: false } }, default: 'Right' },
+        { name: 'label_both', selector: { text: { multiline: false } }, default: 'Both breasts' },
         { name: 'label_bottle', selector: { text: { multiline: false } }, default: 'Bottle' },
         { name: 'label_other', selector: { text: { multiline: false } }, default: 'Other' },
         { name: 'label_feed_solid', selector: { text: { multiline: false } }, default: 'Solid food' },
@@ -609,6 +617,7 @@ class BabyBuddyTimelineCard extends HTMLElement {
         { type: 'section', label: 'Feed Colors' },
         { name: 'color_left', selector: { text: { multiline: false } }, default: '#1f77b4' },
         { name: 'color_right', selector: { text: { multiline: false } }, default: '#ff7f0e' },
+        { name: 'color_both', selector: { text: { multiline: false } }, default: '#d62728' },
         { name: 'color_bottle', selector: { text: { multiline: false } }, default: '#2ca02c' },
         { name: 'color_other', selector: { text: { multiline: false } }, default: '#7f7f7f' },
         { name: 'color_feed_solid', selector: { text: { multiline: false } }, default: '#9467bd' },
@@ -641,11 +650,13 @@ class BabyBuddyTimelineCard extends HTMLElement {
           diaper_entity: 'Diaper Entity',
           label_left: 'Left Label',
           label_right: 'Right Label',
+          label_both: 'Both Breasts Label',
           label_bottle: 'Bottle Label',
           label_other: 'Other Label',
           label_feed_solid: 'Solid Food Label',
           color_left: 'Left Color',
           color_right: 'Right Color',
+          color_both: 'Both Breasts Color',
           color_bottle: 'Bottle Color',
           color_other: 'Other Color',
           color_feed_solid: 'Solid Food Color',
