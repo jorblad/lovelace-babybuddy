@@ -174,7 +174,8 @@ class BabyBuddyWeekFeedingsCard extends HTMLElement {
       const key = dateKey(start);
       const rec = byDay.get(key) || { left:0, right:0, total:0, minutes:0 };
       const mth = (item.method || '').toLowerCase();
-      if (mth.includes('left')) rec.left++;
+      if (mth.includes('both')) { rec.left++; rec.right++; }
+      else if (mth.includes('left')) rec.left++;
       else if (mth.includes('right')) rec.right++;
       rec.total++;
       if (item.duration) {
