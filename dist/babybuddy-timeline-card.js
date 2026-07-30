@@ -1,4 +1,26 @@
 class BabyBuddyTimelineCard extends HTMLElement {
+  _getLanguage(hass = this._hass) {
+    if (hass?.language) {
+      const lang = hass.language.split('-')[0];
+      const translations = window.BabyBuddyTranslations || BabyBuddyTranslations;
+      return translations[lang] ? lang : 'en';
+    }
+    return 'en';
+  }
+
+  _t(path, hass = this._hass) {
+    const lang = this._getLanguage(hass);
+    const translations = window.BabyBuddyTranslations || BabyBuddyTranslations;
+    const langs = translations[lang];
+    const keys = path.split('.');
+    let value = langs;
+    for (const key of keys) {
+      value = value?.[key];
+      if (!value) break;
+    }
+    return value || path;
+  }
+
   setConfig(config) {
     config = config || {};
 
@@ -44,16 +66,16 @@ class BabyBuddyTimelineCard extends HTMLElement {
       offsets: config.offsets ?? '',
       offset_labels: parseOffsetLabels(config.offset_labels),
 
-      label_left: String(config.label_left || 'Left'),
-      label_right: String(config.label_right || 'Right'),
-      label_both: String(config.label_both || 'Both breasts'),
-      label_bottle: String(config.label_bottle || 'Bottle'),
-      label_other: String(config.label_other || 'Other'),
-      label_feed_solid: String(config.label_feed_solid || 'Solid food'),
+      label_left: config.label_left != null ? String(config.label_left) : null,
+      label_right: config.label_right != null ? String(config.label_right) : null,
+      label_both: config.label_both != null ? String(config.label_both) : null,
+      label_bottle: config.label_bottle != null ? String(config.label_bottle) : null,
+      label_other: config.label_other != null ? String(config.label_other) : null,
+      label_feed_solid: config.label_feed_solid != null ? String(config.label_feed_solid) : null,
 
-      label_wet: String(config.label_wet || 'Wet'),
-      label_solid: String(config.label_solid || 'Solid'),
-      label_dry: String(config.label_dry || 'Dry'),
+      label_wet: config.label_wet != null ? String(config.label_wet) : null,
+      label_solid: config.label_solid != null ? String(config.label_solid) : null,
+      label_dry: config.label_dry != null ? String(config.label_dry) : null,
 
       // Hex colors - use defaults if not provided or invalid
       color_left:   isValidHex(config.color_left)   ? config.color_left   : defaultHex.color_left,
@@ -294,7 +316,14 @@ class BabyBuddyTimelineCard extends HTMLElement {
     const diaperState = diaperEnt ? hass.states[diaperEnt] : null;
 
     const methodLabels = Object.assign(
-      { left: this.config.label_left, right: this.config.label_right, both: this.config.label_both, bottle: this.config.label_bottle, other: this.config.label_other, solid_food: this.config.label_feed_solid },
+      {
+        left: this.config.label_left || this._t('timeline.labels.left', hass),
+        right: this.config.label_right || this._t('timeline.labels.right', hass),
+        both: this.config.label_both || this._t('timeline.labels.both', hass),
+        bottle: this.config.label_bottle || this._t('timeline.labels.bottle', hass),
+        other: this.config.label_other || this._t('timeline.labels.other', hass),
+        solid_food: this.config.label_feed_solid || this._t('timeline.labels.solid_food', hass)
+      },
       this.config.feed_labels || {}
     );
 
@@ -335,9 +364,9 @@ class BabyBuddyTimelineCard extends HTMLElement {
     }
 
     const diaperLabels = {
-      wet: this.config.label_wet || 'Wet',
-      solid: this.config.label_solid || 'Solid',
-      dry: this.config.label_dry || 'Dry'
+      wet: this.config.label_wet || this._t('timeline.labels.wet', hass),
+      solid: this.config.label_solid || this._t('timeline.labels.solid', hass),
+      dry: this.config.label_dry || this._t('timeline.labels.dry', hass)
     };
 
     const wetColor   = resolveHexFromConfigOrDefault('color_wet',   this._defaultHex.wet);
@@ -601,20 +630,22 @@ class BabyBuddyTimelineCard extends HTMLElement {
   }
 
   static getConfigForm() {
+    const hass = document.querySelector("home-assistant")?.hass;
+    const t = (path) => BabyBuddyTimelineCard.prototype._t(path, hass);
     return {
       schema: [
         { name: 'feedings_entity', required: false, selector: { entity: { domain: 'sensor' } } },
         { name: 'diaper_entity', required: false, selector: { entity: { domain: 'sensor' } } },
 
-        { type: 'section', label: 'Feed Labels' },
-        { name: 'label_left', selector: { text: { multiline: false } }, default: 'Left' },
-        { name: 'label_right', selector: { text: { multiline: false } }, default: 'Right' },
-        { name: 'label_both', selector: { text: { multiline: false } }, default: 'Both breasts' },
-        { name: 'label_bottle', selector: { text: { multiline: false } }, default: 'Bottle' },
-        { name: 'label_other', selector: { text: { multiline: false } }, default: 'Other' },
-        { name: 'label_feed_solid', selector: { text: { multiline: false } }, default: 'Solid food' },
+        { type: 'section', label: t('timeline.config.feed_labels_section') || 'Feed Labels' },
+        { name: 'label_left', selector: { text: { multiline: false } } },
+        { name: 'label_right', selector: { text: { multiline: false } } },
+        { name: 'label_both', selector: { text: { multiline: false } } },
+        { name: 'label_bottle', selector: { text: { multiline: false } } },
+        { name: 'label_other', selector: { text: { multiline: false } } },
+        { name: 'label_feed_solid', selector: { text: { multiline: false } } },
 
-        { type: 'section', label: 'Feed Colors' },
+        { type: 'section', label: t('timeline.config.feed_colors_section') || 'Feed Colors' },
         { name: 'color_left', selector: { text: { multiline: false } }, default: '#1f77b4' },
         { name: 'color_right', selector: { text: { multiline: false } }, default: '#ff7f0e' },
         { name: 'color_both', selector: { text: { multiline: false } }, default: '#d62728' },
@@ -622,21 +653,21 @@ class BabyBuddyTimelineCard extends HTMLElement {
         { name: 'color_other', selector: { text: { multiline: false } }, default: '#7f7f7f' },
         { name: 'color_feed_solid', selector: { text: { multiline: false } }, default: '#9467bd' },
 
-        { type: 'section', label: 'Diaper Labels' },
-        { name: 'label_wet', selector: { text: { multiline: false } }, default: 'Wet' },
-        { name: 'label_solid', selector: { text: { multiline: false } }, default: 'Solid' },
-        { name: 'label_dry', selector: { text: {} }, default: 'Dry' },
+        { type: 'section', label: t('timeline.config.diaper_labels_section') || 'Diaper Labels' },
+        { name: 'label_wet', selector: { text: { multiline: false } } },
+        { name: 'label_solid', selector: { text: { multiline: false } } },
+        { name: 'label_dry', selector: { text: {} } },
 
-        { type: 'section', label: 'Diaper Colors' },
+        { type: 'section', label: t('timeline.config.diaper_colors_section') || 'Diaper Colors' },
         { name: 'color_wet', selector: { text: { multiline: false } }, default: '#00bfff' },
         { name: 'color_solid', selector: { text: { multiline: false } }, default: '#ff8c00' },
         { name: 'color_dry', selector: { text: { multiline: false } }, default: '#9e9e9e' },
 
-        { type: 'section', label: 'Offsets' },
+        { type: 'section', label: t('timeline.config.offsets_section') || 'Offsets' },
         { name: 'offsets', selector: { text: { multiline: false } }, default: '' },
         { name: 'offset_labels', selector: { text: { multiline: false } }, default: '' },
 
-        { type: 'section', label: 'Options' },
+        { type: 'section', label: t('timeline.config.options_section') || 'Options' },
         { name: 'compare_as_rows', selector: { boolean: {} }, default: false },
         { name: 'force_midnight', selector: { boolean: {} }, default: false },
         { name: 'height', selector: { number: { min: 200, max: 800, step: 10 } }, default: 320 },
@@ -645,55 +676,12 @@ class BabyBuddyTimelineCard extends HTMLElement {
         { name: 'debug', selector: { boolean: {} }, default: false }
       ],
       computeLabel: (schema) => {
-        const labels = {
-          feedings_entity: 'Feedings Entity',
-          diaper_entity: 'Diaper Entity',
-          label_left: 'Left Label',
-          label_right: 'Right Label',
-          label_both: 'Both Breasts Label',
-          label_bottle: 'Bottle Label',
-          label_other: 'Other Label',
-          label_feed_solid: 'Solid Food Label',
-          color_left: 'Left Color',
-          color_right: 'Right Color',
-          color_both: 'Both Breasts Color',
-          color_bottle: 'Bottle Color',
-          color_other: 'Other Color',
-          color_feed_solid: 'Solid Food Color',
-          label_wet: 'Wet Label',
-          label_solid: 'Solid Label',
-          label_dry: 'Dry Label',
-          color_wet: 'Wet Color',
-          color_solid: 'Solid Color',
-          color_dry: 'Dry Color',
-          offsets: 'Offsets',
-          offset_labels: 'Offset Labels',
-          compare_as_rows: 'Compare as Rows',
-          force_midnight: 'Force Midnight X-Axis',
-          height: 'Chart height',
-          disable_scroll_zoom: 'Disable scroll-to-zoom',
-          tooltip_update_debounce_ms: 'Debounce updates while tooltip visible (ms)',
-          debug: 'Show Debug Info'
-        };
-        return labels[schema.name] || schema.label || '';
+        if (schema.name) return t(`timeline.config.${schema.name}`);
+        return schema.label || '';
       },
       computeHelper: (schema) => {
         if (schema && typeof schema.name === 'string') {
-          if (schema.name === 'offsets') {
-            return 'Example: [0,1,2] or "0,1,2" or "24h,48h". Units: d or h.';
-          }
-          if (schema.name === 'offset_labels') {
-            return 'Comma-separated or JSON array. Mapped by index to offsets.';
-          }
-          if (schema.name === 'disable_scroll_zoom') {
-            return 'Prevents mouse wheel zoom in the card.';
-          }
-          if (schema.name === 'tooltip_update_debounce_ms') {
-            return 'Delay re-render while tooltip is open to avoid flicker.';
-          }
-          if (schema.name.startsWith('color_')) {
-            return 'Enter a hex color code (e.g., #ff0000)';
-          }
+          return t(`timeline.config_helper.${schema.name}`);
         }
         return undefined;
       }

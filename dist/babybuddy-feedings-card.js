@@ -1,41 +1,55 @@
 class BabyBuddyWeekFeedingsCard extends HTMLElement {
+  _getLanguage(hass = this._hass) {
+    if (hass?.language) {
+      const lang = hass.language.split('-')[0];
+      const translations = window.BabyBuddyTranslations || BabyBuddyTranslations;
+      return translations[lang] ? lang : 'en';
+    }
+    return 'en';
+  }
+
+  _t(path, hass = this._hass) {
+    const lang = this._getLanguage(hass);
+    const translations = window.BabyBuddyTranslations || BabyBuddyTranslations;
+    const langs = translations[lang];
+    const keys = path.split('.');
+    let value = langs;
+    for (const key of keys) {
+      value = value?.[key];
+      if (!value) break;
+    }
+    return value || path;
+  }
+
   setConfig(config) {
     if (!config) throw new Error('Configuration required');
-    // Defaults in English, everything overridable/translateable
     this.config = {
       entity: config.entity || '',
       days: Math.max(1, Number(config.days ?? 7)),
 
-      // Titles
-      title: String(config.title || 'Breastfeeding'),
-      subtitle: String(config.subtitle || 'Last week'),
+      title: config.title != null ? String(config.title) : null,
+      subtitle: config.subtitle != null ? String(config.subtitle) : null,
 
-      // Bar labels
-      label_left: String(config.label_left || 'left'),
-      label_right: String(config.label_right || 'right'),
+      label_left: config.label_left != null ? String(config.label_left) : null,
+      label_right: config.label_right != null ? String(config.label_right) : null,
+      label_both: config.label_both != null ? String(config.label_both) : null,
 
-      // Pluralization templates
-      // Feedings
-      label_feedings_singular: String(config.label_feedings_singular || 'feeding'),
-      label_feedings_plural: String(config.label_feedings_plural || 'feedings'),
-      // Minutes
-      label_minutes_singular: String(config.label_minutes_singular || 'minute'),
-      label_minutes_plural: String(config.label_minutes_plural || 'minutes'),
+      label_feedings_singular: config.label_feedings_singular != null ? String(config.label_feedings_singular) : null,
+      label_feedings_plural: config.label_feedings_plural != null ? String(config.label_feedings_plural) : null,
+      label_minutes_singular: config.label_minutes_singular != null ? String(config.label_minutes_singular) : null,
+      label_minutes_plural: config.label_minutes_plural != null ? String(config.label_minutes_plural) : null,
 
-      // Relative day labels and formatter
-      label_today: String(config.label_today || 'today'),
-      label_yesterday: String(config.label_yesterday || 'yesterday'),
-      label_days_ago_fmt: String(config.label_days_ago_fmt || '{n} days ago'),
+      label_today: config.label_today != null ? String(config.label_today) : null,
+      label_yesterday: config.label_yesterday != null ? String(config.label_yesterday) : null,
+      label_days_ago_fmt: config.label_days_ago_fmt != null ? String(config.label_days_ago_fmt) : null,
 
-      // Visibility
       show_minutes: config.show_minutes !== undefined ? !!config.show_minutes : true,
 
-      // Colors and styles
       color_left: config.color_left || '#1f77b4',
       color_right: config.color_right || '#ff7f0e',
+      color_both: config.color_both || '#d62728',
       bar_height: Math.max(20, Number(config.bar_height || 28)),
 
-      // Icon (default: baby bottle)
       icon: String(config.icon || 'mdi:baby-bottle'),
 
       debug: !!config.debug
@@ -138,10 +152,23 @@ class BabyBuddyWeekFeedingsCard extends HTMLElement {
     const state = entityId ? this._hass?.states?.[entityId] : null;
     const resultsRaw = state?.attributes?.results;
 
+    const title = cfg.title || this._t('feedings.title');
+    const subtitle = cfg.subtitle || this._t('feedings.subtitle');
+    const labelLeft = cfg.label_left || this._t('feedings.labels.left');
+    const labelRight = cfg.label_right || this._t('feedings.labels.right');
+    const labelBoth = cfg.label_both || this._t('feedings.labels.both');
+    const labelFeedingsSingular = cfg.label_feedings_singular || this._t('feedings.feedings_singular');
+    const labelFeedingsPlural = cfg.label_feedings_plural || this._t('feedings.feedings_plural');
+    const labelMinutesSingular = cfg.label_minutes_singular || this._t('feedings.minutes_singular');
+    const labelMinutesPlural = cfg.label_minutes_plural || this._t('feedings.minutes_plural');
+    const labelToday = cfg.label_today || this._t('feedings.today');
+    const labelYesterday = cfg.label_yesterday || this._t('feedings.yesterday');
+    const labelDaysAgoFmt = cfg.label_days_ago_fmt || this._t('feedings.days_ago_fmt');
+
     // Icon and headers
     this._iconEl.setAttribute('icon', cfg.icon || 'mdi:baby-bottle');
-    this._titleEl.textContent = cfg.title;
-    this._subtitleEl.textContent = cfg.subtitle;
+    this._titleEl.textContent = title;
+    this._subtitleEl.textContent = subtitle;
 
     // Normalize results
     let results = Array.isArray(resultsRaw) ? resultsRaw : [];
@@ -161,9 +188,9 @@ class BabyBuddyWeekFeedingsCard extends HTMLElement {
       return `${y}-${m}-${dd}`;
     };
     const relDay = (idx) => {
-      if (idx === 0) return cfg.label_today;
-      if (idx === 1) return cfg.label_yesterday;
-      return cfg.label_days_ago_fmt.replace('{n}', String(idx));
+      if (idx === 0) return labelToday;
+      if (idx === 1) return labelYesterday;
+      return labelDaysAgoFmt.replace('{n}', String(idx));
     };
 
     // Aggregate per day
@@ -207,8 +234,8 @@ class BabyBuddyWeekFeedingsCard extends HTMLElement {
       const leftPct = (left / totalForSplit) * 100;
       const rightPct = (right / totalForSplit) * 100;
 
-      const feedingsWord = this._plural(row.data.total, cfg.label_feedings_singular, cfg.label_feedings_plural);
-      const minutesWord = this._plural(row.data.minutes, cfg.label_minutes_singular, cfg.label_minutes_plural);
+      const feedingsWord = this._plural(row.data.total, labelFeedingsSingular, labelFeedingsPlural);
+      const minutesWord = this._plural(row.data.minutes, labelMinutesSingular, labelMinutesPlural);
 
       const subtitleBase = `${relDay(row.index)} (${row.data.total} ${feedingsWord}`;
       const subtitle = cfg.show_minutes ? `${subtitleBase} ${row.data.minutes} ${minutesWord})` : `${subtitleBase})`;
@@ -225,12 +252,12 @@ class BabyBuddyWeekFeedingsCard extends HTMLElement {
       const leftSeg = document.createElement('div');
       leftSeg.className = 'leftSeg';
       leftSeg.style.width = `${leftPct}%`;
-      leftSeg.textContent = `${left} ${cfg.label_left}`;
+      leftSeg.textContent = `${left} ${labelLeft}`;
 
       const rightSeg = document.createElement('div');
       rightSeg.className = 'rightSeg';
       rightSeg.style.width = `${rightPct}%`;
-      rightSeg.textContent = `${right} ${cfg.label_right}`;
+      rightSeg.textContent = `${right} ${labelRight}`;
 
       bar.appendChild(leftSeg);
       bar.appendChild(rightSeg);
@@ -255,62 +282,41 @@ class BabyBuddyWeekFeedingsCard extends HTMLElement {
   }
 
   static getConfigForm() {
+    const hass = document.querySelector("home-assistant")?.hass;
+    const t = (path) => BabyBuddyWeekFeedingsCard.prototype._t(path, hass);
     return {
       schema: [
         { name: 'entity', required: true, selector: { entity: { domain: 'sensor' } } },
 
-        // Titles
-        { name: 'title', selector: { text: { multiline: false } }, default: 'Breastfeeding' },
-        { name: 'subtitle', selector: { text: { multiline: false } }, default: 'Last week' },
+        { name: 'title', selector: { text: { multiline: false } } },
+        { name: 'subtitle', selector: { text: { multiline: false } } },
         { name: 'days', selector: { number: { min: 1, max: 14, step: 1 } }, default: 7 },
 
-        // Bar labels
-        { name: 'label_left', selector: { text: { multiline: false } }, default: 'left' },
-        { name: 'label_right', selector: { text: { multiline: false } }, default: 'right' },
+        { name: 'label_left', selector: { text: { multiline: false } } },
+        { name: 'label_right', selector: { text: { multiline: false } } },
+        { name: 'label_both', selector: { text: { multiline: false } } },
 
-        // Pluralization templates
-        { name: 'label_feedings_singular', selector: { text: { multiline: false } }, default: 'feeding' },
-        { name: 'label_feedings_plural', selector: { text: { multiline: false } }, default: 'feedings' },
-        { name: 'label_minutes_singular', selector: { text: { multiline: false } }, default: 'minute' },
-        { name: 'label_minutes_plural', selector: { text: { multiline: false } }, default: 'minutes' },
+        { name: 'label_feedings_singular', selector: { text: { multiline: false } } },
+        { name: 'label_feedings_plural', selector: { text: { multiline: false } } },
+        { name: 'label_minutes_singular', selector: { text: { multiline: false } } },
+        { name: 'label_minutes_plural', selector: { text: { multiline: false } } },
 
-        // Relative days
-        { name: 'label_today', selector: { text: { multiline: false } }, default: 'today' },
-        { name: 'label_yesterday', selector: { text: { multiline: false } }, default: 'yesterday' },
-        { name: 'label_days_ago_fmt', selector: { text: { multiline: false } }, default: '{n} days ago' },
+        { name: 'label_today', selector: { text: { multiline: false } } },
+        { name: 'label_yesterday', selector: { text: { multiline: false } } },
+        { name: 'label_days_ago_fmt', selector: { text: { multiline: false } } },
 
-        // Visibility and appearance
         { name: 'show_minutes', selector: { boolean: {} }, default: true },
         { name: 'icon', selector: { icon: {} }, default: 'mdi:baby-bottle' },
         { name: 'color_left', selector: { color: { mode: 'hex' } }, default: '#1f77b4' },
         { name: 'color_right', selector: { color: { mode: 'hex' } }, default: '#ff7f0e' },
+        { name: 'color_both', selector: { color: { mode: 'hex' } }, default: '#d62728' },
         { name: 'bar_height', selector: { number: { min: 20, max: 40, step: 1 } }, default: 28 },
 
         { name: 'debug', selector: { boolean: {} }, default: false }
       ],
       computeLabel: (schema) => {
-        const m = {
-          entity: 'Feedings sensor',
-          title: 'Title',
-          subtitle: 'Subtitle',
-          days: 'Number of days',
-          label_left: 'Left label',
-          label_right: 'Right label',
-          label_feedings_singular: 'Feedings (singular)',
-          label_feedings_plural: 'Feedings (plural)',
-          label_minutes_singular: 'Minutes (singular)',
-          label_minutes_plural: 'Minutes (plural)',
-          label_today: '“Today” label',
-          label_yesterday: '“Yesterday” label',
-          label_days_ago_fmt: '“Days ago” format ({n} = number)',
-          show_minutes: 'Show total minutes',
-          icon: 'Icon (mdi:...)',
-          color_left: 'Left color',
-          color_right: 'Right color',
-          bar_height: 'Bar height',
-          debug: 'Show debug'
-        };
-        return m[schema.name] || '';
+        if (schema.name) return t(`feedings.config.${schema.name}`);
+        return '';
       }
     };
   }
