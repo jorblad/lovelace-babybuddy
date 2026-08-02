@@ -172,7 +172,7 @@ class BabyBuddySleepTimelineCard extends HTMLElement {
       clearTimeout(this._debounceTimer);
       this._pendingUpdate = async () => { await runUpdate(); };
       this._debounceTimer = setTimeout(async () => {
-        if (this._isTouching) return;
+        if (this._isTouching || this._tooltipActive) return;
         const fn = this._pendingUpdate;
         this._pendingUpdate = null;
         if (fn) await fn();
@@ -258,7 +258,12 @@ class BabyBuddySleepTimelineCard extends HTMLElement {
           dataPointMouseLeave: () => {
             clearTimeout(this._leaveTimer);
             this._leaveTimer = setTimeout(() => { 
-              this._tooltipActive = false; 
+              this._tooltipActive = false;
+              if (this._pendingUpdate && !this._isTouching) {
+                const fn = this._pendingUpdate;
+                this._pendingUpdate = null;
+                fn().catch(console.error);
+              }
             }, this.config.tooltip_update_debounce_ms);
           }
         },
