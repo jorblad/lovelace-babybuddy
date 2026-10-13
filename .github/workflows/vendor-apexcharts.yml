@@ -1,0 +1,42 @@
+name: Vendor ApexCharts
+
+# Re-vendors the local ApexCharts fallback in dist/libs/apexcharts.min.js
+# whenever dist/libs/apexcharts.version is updated (e.g. by Renovate).
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'dist/libs/apexcharts.version'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read pinned version
+        id: version
+        run: echo "version=$(cat dist/libs/apexcharts.version | tr -d '[:space:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Download ApexCharts from jsDelivr
+        run: |
+          URL="https://cdn.jsdelivr.net/npm/apexcharts@${{ steps.version.outputs.version }}/dist/apexcharts.min.js"
+          echo "Downloading $URL"
+          curl -fsSL "$URL" -o dist/libs/apexcharts.min.js
+
+      - name: Commit vendored file if changed
+        run: |
+          if git diff --quiet -- dist/libs/apexcharts.min.js; then
+            echo "No change to vendored ApexCharts."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add dist/libs/apexcharts.min.js
+          git commit -m "chore(deps): vendor apexcharts ${{ steps.version.outputs.version }}"
+          git push
