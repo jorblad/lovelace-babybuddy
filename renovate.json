@@ -3,7 +3,7 @@
   "extends": [
     "config:recommended"
   ],
-  "regexManagers": [
+  "customManagers": [
     {
       "customType": "regex",
       "managerFilePatterns": [
@@ -12,8 +12,8 @@
       "matchStrings": [
         "^(?<currentValue>\\d+\\.\\d+\\.\\d+)$"
       ],
-      "depName": "apexcharts",
-      "datasource": "npm"
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "apexcharts"
     }
   ]
 }
