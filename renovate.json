@@ -2,5 +2,18 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "regexManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/dist/libs/apexcharts\\.version$/"
+      ],
+      "matchStrings": [
+        "^(?<currentValue>\\d+\\.\\d+\\.\\d+)$"
+      ],
+      "depName": "apexcharts",
+      "datasource": "npm"
+    }
   ]
 }

@@ -1,0 +1,13 @@
+{
+  "name": "lovelace-babybuddy",
+  "version": "0.7.0",
+  "private": true,
+  "type": "module",
+  "description": "Custom Home Assistant Lovelace cards for BabyBuddy",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
